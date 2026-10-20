@@ -1,13 +1,14 @@
 # SVG 3D Illustrator
 
-> Deterministic Technical Vector Illustration & 3D Isometric SVG Engine for AI Agents.
+> Universal AI Agent Skill for Deterministic Technical Vector Illustrations & 3D Isometric SVG.
+> Compatible with **Claude Code**, **Antigravity**, **Cursor**, **Codex**, **OpenCode**, and standalone CLI runners.
 > Inspired by the precision craft of **[wheresryan22/anatomy](https://github.com/wheresryan22/anatomy)** and the technical aesthetics of Linear and Stripe.
 
 ---
 
 ## Overview
 
-**`svg-3d-illustrator`** is an Antigravity AI skill that enables autonomous agents to generate **high-craft physical technical illustrations**, precision isometric objects, and clean architectural diagrams directly as pure, deterministic SVG code — **without using diffusion models, external image APIs, or GPU services**.
+**`svg-3d-illustrator`** is a universal skill that equips autonomous AI coding agents to generate **high-craft physical technical illustrations**, precision isometric objects, and clean architectural diagrams directly as pure, deterministic SVG code — **without using diffusion models, external image APIs, or GPU services**.
 
 ### The Core Philosophy: "The Physical Object IS the Explanation"
 - **Zero Marketing Noise**: Never wraps objects in opaque dark cards with promotional headlines ("450 HP"), telemetry boxes, or fake UI badges.
@@ -28,19 +29,31 @@
 
 ---
 
-## Installation & Setup
+## Installation Across AI Agent Ecosystems
 
-### Local Installation
+Install once, use across any agent runner:
+
+### 1. Claude Code
 ```bash
-cd svg-3d-illustrator
-npm test
+mkdir -p ~/.claude/skills
+git clone https://github.com/programadorisgod/svg-3d-illustrator.git ~/.claude/skills/svg-3d-illustrator
 ```
 
-### Global Availability for Antigravity Agents
-To make the skill globally discoverable across all Antigravity workspaces:
+### 2. Antigravity / Gemini CLI
 ```bash
 mkdir -p ~/.gemini/config/skills
-ln -sfn "$(pwd)" ~/.gemini/config/skills/svg-3d-illustrator
+git clone https://github.com/programadorisgod/svg-3d-illustrator.git ~/.gemini/config/skills/svg-3d-illustrator
+```
+
+### 3. OpenCode
+```bash
+mkdir -p ~/.config/opencode/skills
+git clone https://github.com/programadorisgod/svg-3d-illustrator.git ~/.config/opencode/skills/svg-3d-illustrator
+```
+
+### 4. Per-Project Repository (Cursor, Windsurf, Codex, CI/CD)
+```bash
+git submodule add https://github.com/programadorisgod/svg-3d-illustrator.git .skills/svg-3d-illustrator
 ```
 
 ---

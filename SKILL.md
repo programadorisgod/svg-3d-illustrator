@@ -1,11 +1,13 @@
 ---
 name: svg-3d-illustrator
-description: Generate crafted, deterministic technical vector illustrations and 3D SVG objects (Anatomy & Linear style) without generative AI image services. Builds physical, highly detailed objects (retro computers, server blades, workstations, instruments, hardware) with four-tone shading, 0.6px line weights, and transparent backgrounds for websites and documentation.
+description: Universal skill for AI agents (Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf) to generate crafted, deterministic technical vector illustrations and 3D isometric SVG objects (Anatomy & Linear style) without generative AI image services. Builds physical, highly detailed objects with four-tone shading, 0.6px line weights, and transparent backgrounds for websites and documentation.
+compatibility: Universal AI Agent Skill (Claude Code, Antigravity, OpenCode, Codex, Cursor, Windsurf, CLI runners). Requires Node.js 18+.
+license: MIT
 ---
 
 # SVG 3D Illustrator (Craft & Anatomy Engine)
 
-A technical skill for AI agents to compose and generate **high-craft technical vector illustrations**, physical 3D isometric objects, and clean architectural figures directly as pure, deterministic SVG code — **without relying on diffusion models or external image generation APIs**.
+A universal skill for autonomous AI agents across platforms (Claude Code, Antigravity, Cursor, OpenCode, Codex, and standalone CLI) to compose and generate **high-craft technical vector illustrations**, physical 3D isometric objects, and clean architectural figures directly as pure, deterministic SVG code — **without relying on diffusion models or external image generation APIs**.
 
 Built upon the geometric architecture of `wheresryan22/anatomy` and the technical design standards of Linear and Stripe.
 
