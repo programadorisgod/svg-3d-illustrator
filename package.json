@@ -1,0 +1,17 @@
+{
+  "name": "svg-3d-illustrator",
+  "version": "1.0.0",
+  "description": "Deterministic vector illustration & 3D SVG generation skill for AI agents",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "svg-3d": "./bin/svg-3d.mjs"
+  },
+  "scripts": {
+    "test": "node test/verify.test.js",
+    "render-samples": "node test/render-samples.js"
+  },
+  "keywords": ["svg", "3d", "isometric", "illustrations", "ai-agents", "design-system"],
+  "author": "Antigravity",
+  "license": "MIT"
+}
