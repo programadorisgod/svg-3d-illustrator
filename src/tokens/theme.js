@@ -12,9 +12,9 @@ export function resolveTheme(presetName = 'dark-linear', customColors = {}) {
       ...basePreset.colors,
       ...customColors
     },
-    // Tokens de espaciado y fuentes
+    // Tokens de espaciado y fuentes (con comillas simples internas para atributos XML válidos)
     typography: {
-      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       codeFont: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
       sizes: {
         title: 22,

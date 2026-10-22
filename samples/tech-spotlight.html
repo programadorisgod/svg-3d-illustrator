@@ -3,120 +3,557 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview: Agent Core Platform - svg-3d-illustrator</title>
+  <title>Studio: Tech Stack Spotlight — svg-3d-illustrator</title>
   <style>
     :root {
-      --bg: #090a0f;
-      --panel: #131722;
-      --border: #232936;
-      --text: #f1f5f9;
+      --bg-app: #080a0f;
+      --bg-panel: #0d111a;
+      --bg-card: #131824;
+      --bg-hover: #1c2436;
+      --bg-active: #232c42;
+      --border: #1f273a;
+      --border-subtle: #161c2b;
+      --border-hover: #2e3b56;
+      --border-focus: #6366f1;
+      --text: #f8fafc;
       --text-muted: #94a3b8;
-      --accent: #6366f1;
+      --accent: #4f46e5;
+      --accent-hover: #6366f1;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --emerald: #10b981;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg);
+      background: var(--bg-app);
       color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
     }
+
+    /* Top Header */
     header {
-      background: var(--panel);
+      height: 58px;
+      background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      z-index: 20;
+      flex-shrink: 0;
     }
-    .badge {
-      background: rgba(99, 102, 241, 0.2);
-      color: #818cf8;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
-    .meta {
-      font-size: 13px;
-      color: var(--text-muted);
+    .brand {
       display: flex;
-      gap: 16px;
+      align-items: center;
+      gap: 12px;
     }
-    .controls {
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      background: #1e2433;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    button:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    main {
-      flex: 1;
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px;
-      overflow: auto;
-      background: radial-gradient(#1e2433 1px, transparent 1px);
+      font-weight: 800;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 0.04em;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+    }
+    .brand h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .badge {
+      background: var(--accent-light);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-emerald {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-primary {
+      background: #4f46e5;
+      border-color: #4f46e5;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+      border-color: #4338ca;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Infinite Viewport */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease;
+    }
+    .viewport:active {
+      cursor: grabbing;
+    }
+    .viewport[data-backdrop="dark-grid"] {
+      background-color: #080a0f;
+      background-image: radial-gradient(#182030 1px, transparent 1px);
       background-size: 20px 20px;
     }
-    .svg-wrapper {
-      max-width: 95vw;
-      max-height: 80vh;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: transparent;
+    .viewport[data-backdrop="light-paper"] {
+      background-color: #f6f6f3;
+      background-image: radial-gradient(#d6d6d0 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .viewport[data-backdrop="checker"] {
+      background-color: #141720;
+      background-image:
+        linear-gradient(45deg, #1c2230 25%, transparent 25%),
+        linear-gradient(-45deg, #1c2230 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1c2230 75%),
+        linear-gradient(-45deg, transparent 75%, #1c2230 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+    .viewport[data-backdrop="aurora"] {
+      background: radial-gradient(circle at 20% 20%, #151833 0%, #080a0f 60%, #062b24 100%);
+    }
+
+    /* Stage & 3D Orbit Container */
+    .stage-pan-zoom {
+      width: 82%;
+      height: 82%;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      will-change: transform;
+      perspective: 1400px;
     }
-    .svg-wrapper svg {
+    .stage-3d-orbit {
       width: 100%;
-      height: auto;
-      display: block;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transition: transform 0.05s linear;
     }
-    .light-mode {
-      background: #ffffff !important;
+    .stage-3d-orbit svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      overflow: visible;
+      filter: drop-shadow(0 16px 36px rgba(0,0,0,0.3));
+    }
+
+    /* Floating Bottom Zoom & Camera Dock */
+    .floating-dock {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 17, 26, 0.92);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+      z-index: 10;
+    }
+    .dock-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .dock-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+    .dock-btn.active {
+      background: var(--accent-light);
+      color: #c7d2fe;
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .zoom-readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 48px;
+      text-align: center;
+    }
+    .dock-sep {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      margin: 0 3px;
+    }
+
+    /* Top-left HUD Pills */
+    .viewport-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-pill {
+      background: rgba(13, 17, 26, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+    .hud-pill strong {
+      color: var(--text);
+    }
+
+    /* Right Studio Sidebar */
+    .sidebar {
+      width: 348px;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    /* Segmented Control */
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-app);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      gap: 3px;
+    }
+    .segmented button {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .segmented button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .segmented button.active {
+      background: var(--bg-card);
+      color: #fff;
+      font-weight: 600;
+      border: 1px solid var(--border-hover);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Grid Buttons (Animations & Palettes) */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+    .preset-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      height: 35px;
+      padding: 0 11px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.14s ease;
+      text-align: left;
+    }
+    .preset-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .preset-btn.active {
+      background: var(--accent-light);
+      border-color: rgba(99, 102, 241, 0.45);
+      color: #fff;
+      font-weight: 600;
+    }
+    .swatch-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Sliders & Rows */
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      height: 28px;
+    }
+    .control-row span {
+      font-weight: 500;
+    }
+    .control-row input[type="range"] {
+      flex: 1;
+      height: 5px;
+      accent-color: #6366f1;
+      cursor: pointer;
+      background: var(--bg-app);
+      border-radius: 3px;
+    }
+    .control-row .val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text);
+      min-width: 38px;
+      text-align: right;
+    }
+    .color-pickers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .color-picker-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 35px;
+      padding: 0 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .color-picker-item:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .color-picker-item input[type="color"] {
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 368px;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 600;
+      font-size: 12.5px;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: all 0.18s ease;
+      z-index: 100;
+    }
+    .color-picker-item input[type="color"] {
+      width: 16px;
+      height: 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 3px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 340px;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: all 0.18s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
   <header>
-    <div style="display: flex; align-items: center;">
-      <h1 style="font-size: 16px; font-weight: 700;">Agent Core Platform</h1>
-      <span class="badge">tech-stack-spotlight</span>
-      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">cyber-neon</span>
+    <div class="brand">
+      <div class="brand-icon">3D</div>
+      <h1>Tech Stack Spotlight</h1>
+      <span class="badge" id="badge-mode">3D Isometric</span>
+      <span class="badge badge-emerald" id="badge-color">Color / Mono</span>
     </div>
-    <div class="controls">
-      <button onclick="toggleBackground()">Toggle Fondo</button>
-      <button onclick="copySvg()">Copiar SVG</button>
+    <div class="header-actions">
+      <button class="btn" onclick="copyReactComponent()">Copy React &lt;SVG3D /&gt;</button>
+      <button class="btn" onclick="copySvg()">Copy SVG</button>
+      <button class="btn btn-primary" onclick="downloadSvg()">⬇ Download SVG</button>
     </div>
   </header>
-  <main>
-    <div class="svg-wrapper" id="canvas-container">
-      <?xml version="1.0" encoding="UTF-8"?>
+
+  <div class="workspace">
+    <!-- Lienzo Infinito con Zoom, Pan y Órbita 3D -->
+    <main class="viewport" id="viewport" data-backdrop="dark-grid">
+      <div class="viewport-hud">
+        <div class="hud-pill">Mode: <strong id="hud-mode">3D</strong></div>
+        <div class="hud-pill">Color: <strong id="hud-color">Mono</strong></div>
+        <div class="hud-pill">Anim: <strong id="hud-anim">Static</strong></div>
+        <div class="hud-pill">Scroll = <strong>Zoom</strong> · Drag = <strong id="hud-drag">Pan / Orbit</strong></div>
+      </div>
+
+      <div class="stage-pan-zoom" id="stage-pan-zoom">
+        <div class="stage-3d-orbit" id="stage-3d-orbit">
+          <?xml version="1.0" encoding="UTF-8"?>
 <svg 
   xmlns="http://www.w3.org/2000/svg" 
   viewBox="0 0 1000 600" 
   width="1000" 
   height="600"
   role="img"
-  aria-label="Agent Core Platform"
+  aria-label="Edge Compute Cluster"
 >
-  <title>Agent Core Platform</title>
+  <title>Edge Compute Cluster</title>
   <desc>Deterministic 3D SVG Generated by svg-3d-illustrator</desc>
   
   <defs>
@@ -147,142 +584,142 @@
 
     <!-- Gradientes principales -->
     <linearGradient id="grad-primary-v" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.9" />
-      <stop offset="100%" stop-color="#10b981" stop-opacity="1" />
+      <stop offset="0%" stop-color="#5e6ad2" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="1" />
     </linearGradient>
 
     <linearGradient id="grad-accent-diag" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f43f5e" />
-      <stop offset="100%" stop-color="#06b6d4" />
+      <stop offset="0%" stop-color="#00d4b2" />
+      <stop offset="100%" stop-color="#5e6ad2" />
     </linearGradient>
 
     <!-- Gradientes de caras 3D e isométricas -->
     <linearGradient id="iso-top-face" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.95" />
+      <stop offset="0%" stop-color="#5e6ad2" stop-opacity="0.95" />
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0.25" />
     </linearGradient>
 
     <linearGradient id="iso-left-face" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="0%" stop-color="#5e6ad2" />
       <stop offset="100%" stop-color="#000000" stop-opacity="0.4" />
     </linearGradient>
 
     <linearGradient id="iso-right-face" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="0%" stop-color="#8b5cf6" />
       <stop offset="100%" stop-color="#000000" stop-opacity="0.3" />
     </linearGradient>
 
     <!-- Aurora y Fondos -->
     <radialGradient id="aurora-glow-1" cx="40%" cy="30%" r="60%">
-      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.35" />
-      <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.15" />
-      <stop offset="100%" stop-color="#040711" stop-opacity="0" />
+      <stop offset="0%" stop-color="#00d4b2" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#5e6ad2" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#08090d" stop-opacity="0" />
     </radialGradient>
 
     <radialGradient id="aurora-glow-2" cx="70%" cy="60%" r="55%">
-      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3" />
-      <stop offset="60%" stop-color="#06b6d4" stop-opacity="0.1" />
-      <stop offset="100%" stop-color="#040711" stop-opacity="0" />
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.3" />
+      <stop offset="60%" stop-color="#5e6ad2" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#08090d" stop-opacity="0" />
     </radialGradient>
 
     <!-- Patrón de rejilla de puntos -->
     <pattern id="dot-pattern" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1" fill="rgba(6, 182, 212, 0.08)" />
+      <circle cx="2" cy="2" r="1" fill="rgba(255, 255, 255, 0.04)" />
     </pattern>
 
     <!-- Patrón de cuadrícula continua -->
     <pattern id="grid-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
     </pattern>
   </defs>
   
   
     <!-- Fondo sólido y auroras -->
-    <rect width="1000" height="600" fill="#040711" rx="12" />
+    <rect width="1000" height="600" fill="#08090d" rx="12" />
     <rect width="1000" height="600" fill="url(#aurora-glow-1)" />
     <rect width="1000" height="600" fill="url(#aurora-glow-2)" />
     <rect width="1000" height="600" fill="url(#grid-pattern)" opacity="0.3" />
 
     <!-- Título superior centrado -->
     <g class="spotlight-header" transform="translate(500, 60)">
-      <text x="0" y="0" text-anchor="middle" fill="#f0fdfa" font-family="system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif" font-size="32" font-weight="700">
-        Autonomous Agent Platform
+      <text x="0" y="0" text-anchor="middle" fill="#f3f4f6" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="700">
+        Autonomous Agent Stack
       </text>
-      <text x="0" y="30" text-anchor="middle" fill="#99f6e4" font-family="system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif" font-size="14" font-weight="400">
-        Real-time telemetry, persistent memory and deterministic vector generation.
+      <text x="0" y="30" text-anchor="middle" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="400">
+        Full-stack vector engine with zero external image generation dependencies.
       </text>
     </g>
 
     <!-- Resplandor central -->
-    <circle cx="500" cy="308" r="140" fill="#06b6d4" opacity="0.12" filter="url(#glow-ambient)" />
+    <circle cx="500" cy="308" r="140" fill="#5e6ad2" opacity="0.12" filter="url(#glow-ambient)" />
 
     <!-- Escena Isométrica 3D -->
     <g class="isometric-spotlight-group">
       
     <g class="iso-grid">
-      <line x1="500" y1="348" x2="759.81" y2="498" stroke="#06b6d4" stroke-width="1" />
-      <line x1="500" y1="348" x2="240.19" y2="498" stroke="#06b6d4" stroke-width="1" />
-      <line x1="456.7" y1="373" x2="716.51" y2="523" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="543.3" y1="373" x2="283.49" y2="523" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="413.4" y1="398" x2="673.21" y2="548" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="586.6" y1="398" x2="326.79" y2="548" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="370.1" y1="423" x2="629.9" y2="573" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="629.9" y1="423" x2="370.1" y2="573" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="326.79" y1="448" x2="586.6" y2="598" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="673.21" y1="448" x2="413.4" y2="598" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="283.49" y1="473" x2="543.3" y2="623" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="716.51" y1="473" x2="456.7" y2="623" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="240.19" y1="498" x2="500" y2="648" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <line x1="759.81" y1="498" x2="500" y2="648" stroke="rgba(6, 182, 212, 0.08)" stroke-width="1" />
-      <circle cx="500" cy="348" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="373" r="1.5" fill="#67e8f9" />
-      <circle cx="413.4" cy="398" r="1.5" fill="#67e8f9" />
-      <circle cx="370.1" cy="423" r="1.5" fill="#67e8f9" />
-      <circle cx="326.79" cy="448" r="1.5" fill="#67e8f9" />
-      <circle cx="283.49" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="240.19" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="373" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="398" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="423" r="1.5" fill="#67e8f9" />
-      <circle cx="413.4" cy="448" r="1.5" fill="#67e8f9" />
-      <circle cx="370.1" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="326.79" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="283.49" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="586.6" cy="398" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="423" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="448" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="413.4" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="370.1" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="326.79" cy="548" r="1.5" fill="#67e8f9" />
-      <circle cx="629.9" cy="423" r="1.5" fill="#67e8f9" />
-      <circle cx="586.6" cy="448" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="413.4" cy="548" r="1.5" fill="#67e8f9" />
-      <circle cx="370.1" cy="573" r="1.5" fill="#67e8f9" />
-      <circle cx="673.21" cy="448" r="1.5" fill="#67e8f9" />
-      <circle cx="629.9" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="586.6" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="548" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="573" r="1.5" fill="#67e8f9" />
-      <circle cx="413.4" cy="598" r="1.5" fill="#67e8f9" />
-      <circle cx="716.51" cy="473" r="1.5" fill="#67e8f9" />
-      <circle cx="673.21" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="629.9" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="586.6" cy="548" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="573" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="598" r="1.5" fill="#67e8f9" />
-      <circle cx="456.7" cy="623" r="1.5" fill="#67e8f9" />
-      <circle cx="759.81" cy="498" r="1.5" fill="#67e8f9" />
-      <circle cx="716.51" cy="523" r="1.5" fill="#67e8f9" />
-      <circle cx="673.21" cy="548" r="1.5" fill="#67e8f9" />
-      <circle cx="629.9" cy="573" r="1.5" fill="#67e8f9" />
-      <circle cx="586.6" cy="598" r="1.5" fill="#67e8f9" />
-      <circle cx="543.3" cy="623" r="1.5" fill="#67e8f9" />
-      <circle cx="500" cy="648" r="1.5" fill="#67e8f9" />
+      <line x1="500" y1="348" x2="759.81" y2="498" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1" />
+      <line x1="500" y1="348" x2="240.19" y2="498" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1" />
+      <line x1="456.7" y1="373" x2="716.51" y2="523" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="543.3" y1="373" x2="283.49" y2="523" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="413.4" y1="398" x2="673.21" y2="548" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="586.6" y1="398" x2="326.79" y2="548" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="370.1" y1="423" x2="629.9" y2="573" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="629.9" y1="423" x2="370.1" y2="573" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="326.79" y1="448" x2="586.6" y2="598" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="673.21" y1="448" x2="413.4" y2="598" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="283.49" y1="473" x2="543.3" y2="623" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="716.51" y1="473" x2="456.7" y2="623" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="240.19" y1="498" x2="500" y2="648" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <line x1="759.81" y1="498" x2="500" y2="648" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+      <circle cx="500" cy="348" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="373" r="1.5" fill="#828fff" />
+      <circle cx="413.4" cy="398" r="1.5" fill="#828fff" />
+      <circle cx="370.1" cy="423" r="1.5" fill="#828fff" />
+      <circle cx="326.79" cy="448" r="1.5" fill="#828fff" />
+      <circle cx="283.49" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="240.19" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="373" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="398" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="423" r="1.5" fill="#828fff" />
+      <circle cx="413.4" cy="448" r="1.5" fill="#828fff" />
+      <circle cx="370.1" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="326.79" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="283.49" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="586.6" cy="398" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="423" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="448" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="413.4" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="370.1" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="326.79" cy="548" r="1.5" fill="#828fff" />
+      <circle cx="629.9" cy="423" r="1.5" fill="#828fff" />
+      <circle cx="586.6" cy="448" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="413.4" cy="548" r="1.5" fill="#828fff" />
+      <circle cx="370.1" cy="573" r="1.5" fill="#828fff" />
+      <circle cx="673.21" cy="448" r="1.5" fill="#828fff" />
+      <circle cx="629.9" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="586.6" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="548" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="573" r="1.5" fill="#828fff" />
+      <circle cx="413.4" cy="598" r="1.5" fill="#828fff" />
+      <circle cx="716.51" cy="473" r="1.5" fill="#828fff" />
+      <circle cx="673.21" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="629.9" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="586.6" cy="548" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="573" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="598" r="1.5" fill="#828fff" />
+      <circle cx="456.7" cy="623" r="1.5" fill="#828fff" />
+      <circle cx="759.81" cy="498" r="1.5" fill="#828fff" />
+      <circle cx="716.51" cy="523" r="1.5" fill="#828fff" />
+      <circle cx="673.21" cy="548" r="1.5" fill="#828fff" />
+      <circle cx="629.9" cy="573" r="1.5" fill="#828fff" />
+      <circle cx="586.6" cy="598" r="1.5" fill="#828fff" />
+      <circle cx="543.3" cy="623" r="1.5" fill="#828fff" />
+      <circle cx="500" cy="648" r="1.5" fill="#828fff" />
     </g>
   
       
@@ -292,31 +729,31 @@
       
       <polygon 
         points="344.12,318 413.4,358 335.46,423 248.85,373" 
-        fill="rgba(0, 0, 0, 0.7)" 
+        fill="rgba(0, 0, 0, 0.5)" 
         filter="url(#shadow-blur-10)" 
       />
       <!-- Left Face -->
-      <polygon points="257.51,368 309.47,398 309.47,318 257.51,288" fill="#0b1122" stroke="#06b6d4" stroke-width="1" stroke-linejoin="round" />
+      <polygon points="257.51,368 309.47,398 309.47,318 257.51,288" fill="#12141c" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1" stroke-linejoin="round" />
       <!-- Right Face -->
-      <polygon points="309.47,398 396.08,348 396.08,268 309.47,318" fill="#0e7490" stroke="#06b6d4" stroke-width="1" stroke-linejoin="round" />
+      <polygon points="309.47,398 396.08,348 396.08,268 309.47,318" fill="#3c4485" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1" stroke-linejoin="round" />
       <!-- Top Face -->
-      <polygon points="344.12,238 396.08,268 309.47,318 257.51,288" fill="#111b33" stroke="#06b6d4" stroke-width="1" stroke-linejoin="round" />
+      <polygon points="344.12,238 396.08,268 309.47,318 257.51,288" fill="#1a1d29" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1" stroke-linejoin="round" />
     </g>
   
       <g class="server-slots">
         
       <!-- Slot 1 -->
-      <line x1="383.09" y1="295.5" x2="326.79" y2="328" stroke="#06b6d4" stroke-width="2" />
+      <line x1="383.09" y1="295.5" x2="326.79" y2="328" stroke="rgba(94, 106, 210, 0.4)" stroke-width="2" />
       <circle cx="318.13" cy="333" r="2" fill="#00d4b2" />
     
         
       <!-- Slot 2 -->
-      <line x1="383.09" y1="315.5" x2="326.79" y2="348" stroke="#06b6d4" stroke-width="2" />
+      <line x1="383.09" y1="315.5" x2="326.79" y2="348" stroke="rgba(94, 106, 210, 0.4)" stroke-width="2" />
       <circle cx="318.13" cy="353" r="2" fill="#00d4b2" />
     
         
       <!-- Slot 3 -->
-      <line x1="383.09" y1="335.5" x2="326.79" y2="368" stroke="#06b6d4" stroke-width="2" />
+      <line x1="383.09" y1="335.5" x2="326.79" y2="368" stroke="rgba(94, 106, 210, 0.4)" stroke-width="2" />
       <circle cx="318.13" cy="373" r="2" fill="#00d4b2" />
     
       </g>
@@ -325,11 +762,11 @@
         x="326.79" 
         y="263" 
         text-anchor="middle" 
-        fill="#f0fdfa" 
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif" 
+        fill="#f3f4f6" 
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
         font-size="12" 
         font-weight="600"
-      >Edge Core</text>
+      >Microservices</text>
     
     </g>
   
@@ -338,7 +775,7 @@
       
       <g class="db-layer" data-layer="0">
         <!-- Sombra sutil entre capas -->
-        <ellipse cx="482.68" cy="452" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.7)" opacity="0.3" filter="url(#shadow-blur-6)" />
+        <ellipse cx="482.68" cy="452" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.5)" opacity="0.3" filter="url(#shadow-blur-6)" />
 
         <!-- Cuerpo cilíndrico -->
         <path d="
@@ -347,10 +784,10 @@
           A 48.982396838047855 28.26284297555361 0 0 0 531.6623968380478 448
           L 531.6623968380478 430
           Z
-        " fill="#0891b2" stroke="#06b6d4" stroke-width="1.2" />
+        " fill="#4e58a8" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- Tapa superior del disco -->
-        <ellipse cx="482.68" cy="430" rx="48.982396838047855" ry="28.26284297555361" fill="#111b33" stroke="#06b6d4" stroke-width="1.2" />
+        <ellipse cx="482.68" cy="430" rx="48.982396838047855" ry="28.26284297555361" fill="#1a1d29" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- LED indicador en el frente del cilindro -->
         <circle cx="507.17119841902394" cy="439" r="2.5" fill="#10b981" filter="url(#shadow-blur-6)" />
@@ -359,7 +796,7 @@
 
       <g class="db-layer" data-layer="1">
         <!-- Sombra sutil entre capas -->
-        <ellipse cx="482.68" cy="430" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.7)" opacity="0.3" filter="url(#shadow-blur-6)" />
+        <ellipse cx="482.68" cy="430" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.5)" opacity="0.3" filter="url(#shadow-blur-6)" />
 
         <!-- Cuerpo cilíndrico -->
         <path d="
@@ -368,10 +805,10 @@
           A 48.982396838047855 28.26284297555361 0 0 0 531.6623968380478 426
           L 531.6623968380478 408
           Z
-        " fill="#0891b2" stroke="#06b6d4" stroke-width="1.2" />
+        " fill="#4e58a8" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- Tapa superior del disco -->
-        <ellipse cx="482.68" cy="408" rx="48.982396838047855" ry="28.26284297555361" fill="#111b33" stroke="#06b6d4" stroke-width="1.2" />
+        <ellipse cx="482.68" cy="408" rx="48.982396838047855" ry="28.26284297555361" fill="#1a1d29" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- LED indicador en el frente del cilindro -->
         <circle cx="507.17119841902394" cy="417" r="2.5" fill="#10b981" filter="url(#shadow-blur-6)" />
@@ -380,7 +817,7 @@
 
       <g class="db-layer" data-layer="2">
         <!-- Sombra sutil entre capas -->
-        <ellipse cx="482.68" cy="408" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.7)" opacity="0.3" filter="url(#shadow-blur-6)" />
+        <ellipse cx="482.68" cy="408" rx="46.53327699614546" ry="26.84970082677593" fill="rgba(0, 0, 0, 0.5)" opacity="0.3" filter="url(#shadow-blur-6)" />
 
         <!-- Cuerpo cilíndrico -->
         <path d="
@@ -389,10 +826,10 @@
           A 48.982396838047855 28.26284297555361 0 0 0 531.6623968380478 404
           L 531.6623968380478 386
           Z
-        " fill="#0891b2" stroke="#06b6d4" stroke-width="1.2" />
+        " fill="#4e58a8" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- Tapa superior del disco -->
-        <ellipse cx="482.68" cy="386" rx="48.982396838047855" ry="28.26284297555361" fill="#22d3ee" stroke="#06b6d4" stroke-width="1.2" />
+        <ellipse cx="482.68" cy="386" rx="48.982396838047855" ry="28.26284297555361" fill="#6b79e8" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.2" />
 
         <!-- LED indicador en el frente del cilindro -->
         <circle cx="507.17119841902394" cy="395" r="2.5" fill="#10b981" filter="url(#shadow-blur-6)" />
@@ -403,21 +840,21 @@
         x="482.68" 
         y="367" 
         text-anchor="middle" 
-        fill="#f0fdfa" 
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif" 
+        fill="#f3f4f6" 
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
         font-size="12" 
         font-weight="600"
-      >Vector Memory</text>
+      >Turso / Vector DB</text>
     
     </g>
   
       
     <g class="primitive-terminal" id="spotlight-terminal">
       <!-- Fondo de terminal -->
-      <path d="M 491.34 143 L 612.58 213 L 612.58 293 L 491.34 223 Z" fill="#0b1122" stroke="#06b6d4" stroke-width="1.5" />
+      <path d="M 491.34 143 L 612.58 213 L 612.58 293 L 491.34 223 Z" fill="#12141c" stroke="rgba(94, 106, 210, 0.4)" stroke-width="1.5" />
       
       <!-- Barra superior -->
-      <path d="M 491.34 143 L 612.58 213 L 612.58 231 L 491.34 161 Z" fill="#111b33" stroke="rgba(6, 182, 212, 0.2)" stroke-width="1" />
+      <path d="M 491.34 143 L 612.58 213 L 612.58 231 L 491.34 161 Z" fill="#1a1d29" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
       
       <!-- Dots -->
       <circle cx="501.73" cy="158" r="3" fill="#ef4444" />
@@ -429,11 +866,11 @@
       <text 
         x="503.46" 
         y="184" 
-        fill="#f43f5e" 
+        fill="#00d4b2" 
         font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" 
         font-size="11" 
         font-weight="500"
-      >> init pipeline --strict</text>
+      >> agy run build</text>
     
 
       <text 
@@ -443,37 +880,663 @@
         font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" 
         font-size="11" 
         font-weight="500"
-      >✓ Engine compiled (100% vector)</text>
+      >✓ Vectors compiled</text>
     
 
       <text 
         x="503.46" 
         y="220" 
-        fill="#99f6e4" 
+        fill="#9ca3af" 
         font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" 
         font-size="11" 
         font-weight="500"
-      >→ Ready for agent execution</text>
+      >→ Serving at port 8080</text>
     
     </g>
   
     </g>
   
 </svg>
-    </div>
-  </main>
+        </div>
+      </div>
+
+      <div class="floating-dock">
+        <button class="dock-btn" onclick="zoomStep(-0.2)" title="Zoom Out">−</button>
+        <span class="zoom-readout" id="zoom-readout">100%</span>
+        <button class="dock-btn" onclick="zoomStep(0.2)" title="Zoom In">+</button>
+        <button class="dock-btn" onclick="resetZoomAndPan()" title="Fit to Screen">Fit</button>
+        <div class="dock-sep"></div>
+        <button class="dock-btn active" id="btn-drag-pan" onclick="setDragMode('pan')">✋ Pan</button>
+        <button class="dock-btn" id="btn-drag-orbit" onclick="setDragMode('orbit')">🌐 3D Orbit (360°)</button>
+        <button class="dock-btn" id="btn-auto-spin" onclick="toggleAutoSpin()" title="Auto-Rotate 360° Turntable">▶ Turntable</button>
+        <button class="dock-btn" onclick="resetOrbit()" title="Reset 3D Angles">Reset Angle</button>
+      </div>
+    </main>
+
+    <!-- Panel Lateral del Studio -->
+    <aside class="sidebar">
+      <!-- 1. Dimensión: 2D Plano vs 3D Volumétrico -->
+      <div class="section">
+        <div class="section-title">
+          <span>1. Dimensión (2D Flat / 3D)</span>
+        </div>
+        <div class="segmented">
+          <button id="mode-3d-btn" class="active" onclick="setDimensionMode('3d')">🧊 3D Volumetric</button>
+          <button id="mode-2d-btn" onclick="setDimensionMode('2d')">📐 2D Flat Vector</button>
+        </div>
+        <div class="control-row">
+          <span>Tilt X (Pitch)</span>
+          <input type="range" id="tilt-x" min="-90" max="90" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-x-val">0°</span>
+        </div>
+        <div class="control-row">
+          <span>Yaw Y (360°)</span>
+          <input type="range" id="tilt-y" min="-180" max="180" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-y-val">0°</span>
+        </div>
+        <div class="control-row">
+          <span>Roll Z</span>
+          <input type="range" id="tilt-z" min="-180" max="180" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-z-val">0°</span>
+        </div>
+        <div class="preset-grid" style="margin-top: 4px;">
+          <button class="preset-btn" onclick="setAnglePreset(0, 0, 0)">🎯 De Frente (0°)</button>
+          <button class="preset-btn" onclick="setAnglePreset(18, -32, 0)">🧊 Vista Iso</button>
+          <button class="preset-btn" onclick="setAnglePreset(0, 180, 0)">🔄 Voltear 180°</button>
+          <button class="preset-btn" onclick="setAnglePreset(80, 0, 0)">📐 Vista Cenital</button>
+        </div>
+      </div>
+
+      <!-- 2. Modo de Color y Paletas -->
+      <div class="section">
+        <div class="section-title">
+          <span>2. Color &amp; Material</span>
+        </div>
+        <div class="segmented">
+          <button id="color-mono-btn" onclick="setColorMode('mono')">◐ B&amp;W Mono</button>
+          <button id="color-full-btn" onclick="setColorMode('color')">🎨 Full Color</button>
+        </div>
+        <div class="segmented" style="margin-top: 4px;">
+          <button id="theme-light-btn" onclick="setTheme('light')">☀ Light Tone</button>
+          <button id="theme-dark-btn" onclick="setTheme('dark')">🌙 Dark Tone</button>
+        </div>
+
+        <div class="section-title" style="margin-top: 6px;">
+          <span>Paletas de Material</span>
+        </div>
+        <div class="preset-grid" id="palette-grid">
+          <button class="preset-btn" data-pal="botanical" onclick="setPalette('botanical')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#fb7185,#10b981)"></span>Botanical
+          </button>
+          <button class="preset-btn" data-pal="vibrant" onclick="setPalette('vibrant')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#6366f1,#0ea5e9)"></span>Vibrant
+          </button>
+          <button class="preset-btn" data-pal="cyber-neon" onclick="setPalette('cyber-neon')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#06b6d4,#a855f7)"></span>Cyber Neon
+          </button>
+          <button class="preset-btn" data-pal="warm-craft" onclick="setPalette('warm-craft')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#d97706,#dc2626)"></span>Warm Craft
+          </button>
+          <button class="preset-btn" data-pal="blueprint" onclick="setPalette('blueprint')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#3b82f6,#38bdf8)"></span>Blueprint
+          </button>
+          <button class="preset-btn" data-pal="gold-onyx" onclick="setPalette('gold-onyx')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#eab308,#27272a)"></span>Gold &amp; Onyx
+          </button>
+        </div>
+
+        <div class="section-title" style="margin-top: 6px;">
+          <span>Color Personalizado &amp; Trazo</span>
+        </div>
+        <div class="color-pickers">
+          <label class="color-picker-item">
+            <input type="color" id="custom-primary" value="#fb7185" oninput="applyCustomTint('primary', this.value)">
+            <span>Main</span>
+          </label>
+          <label class="color-picker-item">
+            <input type="color" id="custom-secondary" value="#10b981" oninput="applyCustomTint('secondary', this.value)">
+            <span>Sub</span>
+          </label>
+          <label class="color-picker-item">
+            <input type="color" id="custom-accent" value="#f59e0b" oninput="applyCustomTint('accent', this.value)">
+            <span>Accent</span>
+          </label>
+        </div>
+        <div class="control-row" style="margin-top: 4px;">
+          <span>Line Weight</span>
+          <input type="range" id="stroke-weight" min="0.3" max="1.8" step="0.1" value="0.6" oninput="setStrokeWeight(this.value)">
+          <span class="val" id="stroke-weight-val">0.6px</span>
+        </div>
+      </div>
+
+      <!-- 3. Animaciones (Presets 3dsvg) -->
+      <div class="section">
+        <div class="section-title">
+          <span>3. Animaciones (2D &amp; 3D)</span>
+        </div>
+        <div class="preset-grid" id="anim-grid">
+          <button class="preset-btn" data-anim="static" onclick="setAnimation('static')">⏹ Static</button>
+          <button class="preset-btn" data-anim="float" onclick="setAnimation('float')">☁ Float</button>
+          <button class="preset-btn" data-anim="spin" onclick="setAnimation('spin')">🔄 Spin / Orbit</button>
+          <button class="preset-btn" data-anim="pulse" onclick="setAnimation('pulse')">💓 Pulse</button>
+          <button class="preset-btn" data-anim="wobble" onclick="setAnimation('wobble')">〰 Wobble</button>
+          <button class="preset-btn" data-anim="swing" onclick="setAnimation('swing')">🔔 Swing</button>
+          <button class="preset-btn" data-anim="spin-float" onclick="setAnimation('spin-float')">✨ Spin+Float</button>
+          <button class="preset-btn" data-anim="bloom" onclick="setAnimation('bloom')">🌸 Bloom</button>
+        </div>
+        <div class="control-row" style="margin-top: 4px;">
+          <span>Speed</span>
+          <input type="range" id="anim-speed" min="0.4" max="2.5" step="0.1" value="1.0" oninput="setAnimSpeed(this.value)">
+          <span class="val" id="anim-speed-val">1.0x</span>
+        </div>
+      </div>
+
+      <!-- 4. Escena y Fondo (Background-Ready) -->
+      <div class="section">
+        <div class="section-title">
+          <span>4. Composición &amp; Fondo</span>
+        </div>
+        <div class="segmented">
+          <button id="plate-show-btn" class="active" onclick="setBasePlate(true)">▭ With Base Plate</button>
+          <button id="plate-hide-btn" onclick="setBasePlate(false)">✨ No Plate (BG Ready)</button>
+        </div>
+        <div class="preset-grid" style="margin-top: 4px;">
+          <button class="preset-btn active" data-bg="dark-grid" onclick="setBackdrop('dark-grid')">Dark Grid</button>
+          <button class="preset-btn" data-bg="light-paper" onclick="setBackdrop('light-paper')">White Paper</button>
+          <button class="preset-btn" data-bg="checker" onclick="setBackdrop('checker')">Transparent</button>
+          <button class="preset-btn" data-bg="aurora" onclick="setBackdrop('aurora')">Aurora Hero</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
 
   <script>
-    function toggleBackground() {
-      const el = document.getElementById('canvas-container');
-      el.classList.toggle('light-mode');
+    const PALETTES = {"vibrant":{"primary":"#6366f1","secondary":"#0ea5e9","accent":"#f43f5e","petal":"#fb7185","petal-deep":"#e11d48","leaf":"#10b981","stem":"#059669","gold":"#f59e0b","copper":"#d97706","chassis":"#e2e8f0","panel":"#cbd5e1","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"botanical":{"primary":"#f43f5e","secondary":"#10b981","accent":"#f59e0b","petal":"#fb7185","petal-deep":"#e11d48","leaf":"#10b981","stem":"#059669","gold":"#fbbf24","copper":"#d97706","chassis":"#ffe4e6","panel":"#d1fae5","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"cyber-neon":{"primary":"#06b6d4","secondary":"#8b5cf6","accent":"#f43f5e","petal":"#22d3ee","petal-deep":"#a855f7","leaf":"#10b981","stem":"#0891b2","gold":"#facc15","copper":"#f97316","chassis":"#38bdf8","panel":"#818cf8","pcb":"#14b8a6","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"warm-craft":{"primary":"#d97706","secondary":"#b45309","accent":"#dc2626","petal":"#fb923c","petal-deep":"#ea580c","leaf":"#65a30d","stem":"#4d7c0f","gold":"#eab308","copper":"#ea580c","chassis":"#fde68a","panel":"#fed7aa","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"blueprint":{"primary":"#3b82f6","secondary":"#60a5fa","accent":"#38bdf8","petal":"#60a5fa","petal-deep":"#2563eb","leaf":"#38bdf8","stem":"#0284c7","gold":"#facc15","copper":"#93c5fd","chassis":"#93c5fd","panel":"#bfdbfe","pcb":"#2563eb","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"gold-onyx":{"primary":"#eab308","secondary":"#ca8a04","accent":"#f59e0b","petal":"#fde047","petal-deep":"#ca8a04","leaf":"#eab308","stem":"#a16207","gold":"#fef08a","copper":"#f59e0b","chassis":"#71717a","panel":"#a1a1aa","pcb":"#ca8a04","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"}};
+    const EXTRA_ANIM_CSS = "\n.iso-svg{\n  --anim-speed:1;\n}\n.iso-svg .iso-scene-root,\n.iso-svg [data-layer],\n.iso-svg .iso-halo,\n.iso-svg .iso-petal-ring{\n  transform-box:fill-box;\n  transform-origin:center center;\n}\n\n@keyframes svg3d-float{\n  0%,100%{transform:translateY(0px)}\n  50%{transform:translateY(-10px)}\n}\n@keyframes svg3d-float-detail{\n  0%,100%{transform:translateY(0px)}\n  50%{transform:translateY(-14px)}\n}\n@keyframes svg3d-halo-breathe{\n  0%,100%{transform:translateY(3px) scale(1);opacity:var(--anatomy-halo-opacity,.32)}\n  50%{transform:translateY(3px) scale(.92);opacity:calc(var(--anatomy-halo-opacity,.32) * .65)}\n}\n@keyframes svg3d-spin-2d{\n  0%{transform:rotate(0deg)}\n  100%{transform:rotate(360deg)}\n}\n@keyframes svg3d-spin-3d{\n  0%{transform:rotate(0deg) skewX(0deg) scale(1)}\n  25%{transform:rotate(4deg) skewX(3deg) scale(.98)}\n  50%{transform:rotate(0deg) skewX(0deg) scale(1.02)}\n  75%{transform:rotate(-4deg) skewX(-3deg) scale(.98)}\n  100%{transform:rotate(0deg) skewX(0deg) scale(1)}\n}\n@keyframes svg3d-pulse{\n  0%,100%{transform:scale(1)}\n  50%{transform:scale(1.045)}\n}\n@keyframes svg3d-wobble{\n  0%,100%{transform:rotate(0deg) skewY(0deg) translateY(0px)}\n  25%{transform:rotate(-2.8deg) skewY(1.8deg) translateY(-4px)}\n  75%{transform:rotate(2.8deg) skewY(-1.8deg) translateY(-2px)}\n}\n@keyframes svg3d-swing{\n  0%,100%{transform:rotate(0deg)}\n  25%{transform:rotate(5deg)}\n  75%{transform:rotate(-5deg)}\n}\n@keyframes svg3d-spin-float{\n  0%,100%{transform:translateY(0px) rotate(0deg) scale(1)}\n  25%{transform:translateY(-6px) rotate(2.5deg) scale(1.01)}\n  50%{transform:translateY(-12px) rotate(0deg) scale(1.025)}\n  75%{transform:translateY(-6px) rotate(-2.5deg) scale(1.01)}\n}\n@keyframes svg3d-bloom{\n  0%,100%{transform:scale(1) rotate(0deg)}\n  50%{transform:scale(1.055) rotate(2.5deg)}\n}\n@keyframes svg3d-bloom-inner{\n  0%,100%{transform:scale(1) rotate(0deg)}\n  50%{transform:scale(1.09) rotate(-4deg)}\n}\n\n/* Preset: FLOAT */\n.iso-svg[data-animate=\"float\"] .iso-scene-root{\n  animation:svg3d-float calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"float\"] [data-layer=\"detail\"]{\n  animation:svg3d-float-detail calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"float\"] .iso-halo{\n  animation:svg3d-halo-breathe calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SPIN */\n.iso-svg[data-animate=\"spin\"][data-mode=\"2d\"] .iso-scene-root{\n  animation:svg3d-spin-2d calc(16s / var(--anim-speed, 1)) linear infinite;\n}\n.iso-svg[data-animate=\"spin\"]:not([data-mode=\"2d\"]) .iso-scene-root{\n  animation:svg3d-spin-3d calc(7s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: PULSE */\n.iso-svg[data-animate=\"pulse\"] .iso-scene-root{\n  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"pulse\"] [data-layer=\"detail\"]{\n  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite 0.2s;\n}\n\n/* Preset: WOBBLE */\n.iso-svg[data-animate=\"wobble\"] .iso-scene-root{\n  animation:svg3d-wobble calc(4.6s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SWING */\n.iso-svg[data-animate=\"swing\"] .iso-scene-root{\n  transform-origin:center 20%;\n  animation:svg3d-swing calc(3.8s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SPIN-FLOAT */\n.iso-svg[data-animate=\"spin-float\"] .iso-scene-root{\n  animation:svg3d-spin-float calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"spin-float\"] [data-layer=\"detail\"]{\n  animation:svg3d-float-detail calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"spin-float\"] .iso-halo{\n  animation:svg3d-halo-breathe calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: BLOOM */\n.iso-svg[data-animate=\"bloom\"] .iso-scene-root{\n  animation:svg3d-float calc(5s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"bloom\"] [data-layer=\"main\"]{\n  animation:svg3d-bloom calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"bloom\"] [data-layer=\"detail\"]{\n  animation:svg3d-bloom-inner calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n";
+
+    const viewport = document.getElementById('viewport');
+    const stagePanZoom = document.getElementById('stage-pan-zoom');
+    const stageOrbit = document.getElementById('stage-3d-orbit');
+    const svgEl = document.querySelector('.stage-3d-orbit svg');
+
+    let state = {
+      zoom: 1,
+      panX: 0,
+      panY: 0,
+      dragMode: 'pan', // 'pan' | 'orbit'
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      mode: svgEl?.getAttribute('data-mode') || '3d',
+      colorMode: svgEl?.getAttribute('data-color-mode') || 'mono',
+      theme: svgEl?.getAttribute('data-theme') || 'light',
+      palette: svgEl?.getAttribute('data-palette') || 'botanical',
+      animate: svgEl?.getAttribute('data-animate') || 'static',
+      showPlate: svgEl?.getAttribute('data-plate') !== 'hidden'
+    };
+
+    // Inicializar compatibilidad en SVGs antiguos (como axis-topography) si no tienen estructura V2
+    function upgradeLegacySvgIfNeeded() {
+      if (!svgEl) return;
+      svgEl.classList.add('iso-svg', 'iso');
+
+      // Asegurar que el CSS de animaciones y color esté inyectado
+      let styleTag = svgEl.querySelector('style');
+      if (!styleTag) {
+        styleTag = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+        svgEl.prepend(styleTag);
+      }
+      if (!styleTag.textContent.includes('svg3d-float')) {
+        styleTag.textContent += '\n' + EXTRA_ANIM_CSS + `
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-fill{fill:var(--c-s1,var(--anatomy-paper))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-top{fill:var(--c-top,var(--anatomy-top))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="0"]{fill:var(--c-s0,var(--anatomy-shade-0))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="1"]{fill:var(--c-s1,var(--anatomy-shade-1))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="2"]{fill:var(--c-s2,var(--anatomy-shade-2))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="3"]{fill:var(--c-s3,var(--anatomy-shade-3))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-edge{stroke:var(--c-edge,var(--anatomy-hi))}
+          .iso-svg[data-plate="hidden"] .iso-base-plate{display:none!important}
+          .iso-svg[data-mode="2d"][data-legacy-svg="true"] .iso-shade{display:none!important}
+          .iso-svg[data-mode="2d"][data-legacy-svg="true"] .iso-halo{display:none!important}
+        `;
+      }
+
+      // Envolver en .iso-scene-root si es un SVG V1
+      if (!svgEl.querySelector('.iso-scene-root')) {
+        svgEl.setAttribute('data-legacy-svg', 'true');
+        const rootG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        rootG.setAttribute('class', 'iso-scene-root');
+        const children = Array.from(svgEl.childNodes).filter(n => n.nodeName.toLowerCase() !== 'style' && n.nodeName.toLowerCase() !== 'defs');
+        children.forEach(ch => rootG.appendChild(ch));
+        svgEl.appendChild(rootG);
+
+        // Detectar automáticamente la placa base y los colores por altura/orden en SVGs V1
+        const solids = Array.from(rootG.querySelectorAll('.iso-solid'));
+        const halo = rootG.querySelector('.iso-halo');
+        if (halo) halo.classList.add('iso-base-plate');
+        if (solids.length > 5) {
+          // Los primeros 5 sólidos en modelos con patas + placa suelen ser los pies y la gran bandeja base
+          solids.slice(0, 5).forEach(s => s.classList.add('iso-base-plate'));
+        }
+        const autoRoles = ['panel', 'chassis', 'primary', 'secondary', 'accent', 'leaf', 'gold', 'copper'];
+        solids.forEach((s, idx) => {
+          if (!s.getAttribute('data-tint')) {
+            s.setAttribute('data-tint', autoRoles[idx % autoRoles.length]);
+          }
+        });
+      }
     }
-    function copySvg() {
-      const svg = document.querySelector('svg').outerHTML;
-      navigator.clipboard.writeText(svg).then(() => {
-        alert('¡Código SVG copiado al portapapeles!');
+
+    function computeShadesClient(hexStr) {
+      const clean = (hexStr || '#6366f1').replace('#', '');
+      const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+      const r = parseInt(full.slice(0, 2), 16) || 99;
+      const g = parseInt(full.slice(2, 4), 16) || 102;
+      const b = parseInt(full.slice(4, 6), 16) || 241;
+      const mix = (tr, tg, tb, w) => {
+        const nr = Math.round(r * (1 - w) + tr * w);
+        const ng = Math.round(g * (1 - w) + tg * w);
+        const nb = Math.round(b * (1 - w) + tb * w);
+        return '#' + [nr, ng, nb].map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+      };
+      return {
+        top: mix(255, 255, 255, 0.34),
+        s3: mix(255, 255, 255, 0.14),
+        s2: '#' + full.toLowerCase(),
+        s1: mix(15, 23, 42, 0.18),
+        s0: mix(15, 23, 42, 0.36),
+        edge: mix(10, 12, 20, 0.58),
+        crease: mix(255, 255, 255, 0.45)
+      };
+    }
+
+    function applyPaletteToSolids(palName) {
+      if (!svgEl) return;
+      const pal = PALETTES[palName] || PALETTES.botanical;
+
+      // 1. Inyectar variables CSS semánticas en el SVG raíz (actualiza instantáneamente Stickers Pop, notas de voz, cohetes, corazones, etc.)
+      const semanticKeys = ['primary', 'secondary', 'accent', 'petal', 'leaf', 'stem', 'gold', 'copper', 'chassis', 'panel', 'pcb'];
+      semanticKeys.forEach(function(k) {
+        if (pal[k]) svgEl.style.setProperty('--pal-' + k, pal[k]);
+      });
+
+      // 2. Actualizar bloques 3D (.iso-solid) con cálculo analítico de 4 tonos
+      svgEl.querySelectorAll('.iso-solid').forEach(el => {
+        const tint = el.getAttribute('data-tint') || 'primary';
+        const hex = pal[tint] || (tint.startsWith('#') ? tint : pal.primary);
+        const sh = computeShadesClient(hex);
+        el.setAttribute('data-has-color', '');
+        el.style.setProperty('--c-top', sh.top);
+        el.style.setProperty('--c-s0', sh.s0);
+        el.style.setProperty('--c-s1', sh.s1);
+        el.style.setProperty('--c-s2', sh.s2);
+        el.style.setProperty('--c-s3', sh.s3);
+        el.style.setProperty('--c-edge', sh.edge);
+        el.style.setProperty('--c-crease', sh.crease);
+      });
+
+      // 3. Actualizar degradados de plantillas e ilustraciones tipo Aurora / Cube / Tech
+      const r1 = svgEl.querySelector('#aurora-ribbon-1');
+      if (r1) {
+        const stops = r1.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.primary || '#6366f1');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.accent || pal.secondary || '#06b6d4');
+        if (stops[2]) stops[2].setAttribute('stop-color', pal.leaf || pal.primary || '#10b981');
+      }
+      const r2 = svgEl.querySelector('#aurora-ribbon-2');
+      if (r2) {
+        const stops = r2.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.accent || pal.petal || '#f43f5e');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary || pal.primary || '#8b5cf6');
+        if (stops[2]) stops[2].setAttribute('stop-color', pal.primary || '#06b6d4');
+      }
+      const r3 = svgEl.querySelector('#aurora-ribbon-3');
+      if (r3) {
+        const stops = r3.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.leaf || pal.primary || '#10b981');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary || pal.accent || '#06b6d4');
+      }
+      const gradV = svgEl.querySelector('#grad-primary-v');
+      if (gradV) {
+        const stops = gradV.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.primary);
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary);
+      }
+      const gradDiag = svgEl.querySelector('#grad-accent-diag');
+      if (gradDiag) {
+        const stops = gradDiag.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.accent);
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.primary);
+      }
+      // Actualizar orbes difusos de fondo si existen
+      const orbs = svgEl.querySelectorAll('ellipse, circle');
+      if (orbs.length >= 3 && svgEl.querySelector('#aurora-blur-heavy')) {
+        if (orbs[0]) orbs[0].setAttribute('fill', pal.primary);
+        if (orbs[1]) orbs[1].setAttribute('fill', pal.accent || pal.secondary);
+        if (orbs[2]) orbs[2].setAttribute('fill', pal.leaf || pal.primary);
+      }
+    }
+
+    function applyCustomTint(groupRole, hexValue) {
+      if (!svgEl) return;
+      setColorMode('color');
+
+      // 1. Inyectar variables semánticas en el root para que los estilos CSS y animaciones 2D Pop se enteren
+      if (groupRole === 'primary') {
+        svgEl.style.setProperty('--pal-primary', hexValue);
+        const r1 = svgEl.querySelector('#aurora-ribbon-1 stop:first-child');
+        if (r1) r1.setAttribute('stop-color', hexValue);
+      } else if (groupRole === 'secondary') {
+        svgEl.style.setProperty('--pal-secondary', hexValue);
+        svgEl.style.setProperty('--pal-leaf', hexValue);
+        svgEl.style.setProperty('--pal-stem', hexValue);
+        const r2 = svgEl.querySelector('#aurora-ribbon-2 stop:first-child');
+        if (r2) r2.setAttribute('stop-color', hexValue);
+      } else if (groupRole === 'accent') {
+        svgEl.style.setProperty('--pal-accent', hexValue);
+        svgEl.style.setProperty('--pal-petal', hexValue);
+        svgEl.style.setProperty('--pal-gold', hexValue);
+        const r3 = svgEl.querySelector('#aurora-ribbon-3 stop:first-child');
+        if (r3) r3.setAttribute('stop-color', hexValue);
+      }
+
+      // 2. Aplicar a bloques 3D
+      const roleMap = {
+        primary: ['primary', 'petal', 'petal-deep', 'chassis'],
+        secondary: ['secondary', 'leaf', 'stem', 'pcb', 'panel'],
+        accent: ['accent', 'gold', 'copper', 'brass', 'wood']
+      };
+      const targets = roleMap[groupRole] || [groupRole];
+      const sh = computeShadesClient(hexValue);
+      svgEl.querySelectorAll('.iso-solid').forEach(el => {
+        const tint = el.getAttribute('data-tint') || 'primary';
+        if (targets.includes(tint)) {
+          el.setAttribute('data-has-color', '');
+          el.style.setProperty('--c-top', sh.top);
+          el.style.setProperty('--c-s0', sh.s0);
+          el.style.setProperty('--c-s1', sh.s1);
+          el.style.setProperty('--c-s2', sh.s2);
+          el.style.setProperty('--c-s3', sh.s3);
+          el.style.setProperty('--c-edge', sh.edge);
+          el.style.setProperty('--c-crease', sh.crease);
+        }
       });
     }
+
+    function renderTransform() {
+      stagePanZoom.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+      stageOrbit.style.transform = `rotateX(${state.rotX}deg) rotateY(${state.rotY}deg) rotateZ(${state.rotZ}deg)`;
+      document.getElementById('zoom-readout').textContent = Math.round(state.zoom * 100) + '%';
+    }
+
+    function zoomStep(delta, centerX, centerY) {
+      const next = Math.min(8, Math.max(0.25, +(state.zoom + delta).toFixed(2)));
+      state.zoom = next;
+      renderTransform();
+    }
+
+    function resetZoomAndPan() {
+      state.zoom = 1;
+      state.panX = 0;
+      state.panY = 0;
+      renderTransform();
+    }
+
+    function setAnglePreset(rx, ry, rz) {
+      stopAutoSpin();
+      state.rotX = rx;
+      state.rotY = ry;
+      state.rotZ = rz;
+      document.getElementById('tilt-x').value = rx;
+      document.getElementById('tilt-y').value = ry;
+      document.getElementById('tilt-z').value = rz;
+      document.getElementById('tilt-x-val').textContent = rx + '°';
+      document.getElementById('tilt-y-val').textContent = ry + '°';
+      document.getElementById('tilt-z-val').textContent = rz + '°';
+      renderTransform();
+    }
+
+    function resetOrbit() {
+      setAnglePreset(0, 0, 0);
+    }
+
+    let spinAnimationId = null;
+    function stopAutoSpin() {
+      if (spinAnimationId) {
+        cancelAnimationFrame(spinAnimationId);
+        spinAnimationId = null;
+      }
+      const spinBtn = document.getElementById('btn-auto-spin');
+      if (spinBtn) {
+        spinBtn.classList.remove('active');
+        spinBtn.innerHTML = '▶ Turntable';
+      }
+    }
+
+    function toggleAutoSpin() {
+      if (spinAnimationId) {
+        stopAutoSpin();
+      } else {
+        const spinBtn = document.getElementById('btn-auto-spin');
+        if (spinBtn) {
+          spinBtn.classList.add('active');
+          spinBtn.innerHTML = '⏸ Pausar 360°';
+        }
+        function step() {
+          state.rotY = (state.rotY + 0.65) % 360;
+          const roundedY = Math.round(state.rotY);
+          const sliderY = ((roundedY + 180) % 360) - 180;
+          document.getElementById('tilt-y').value = sliderY;
+          document.getElementById('tilt-y-val').textContent = roundedY + '°';
+          renderTransform();
+          spinAnimationId = requestAnimationFrame(step);
+        }
+        spinAnimationId = requestAnimationFrame(step);
+      }
+    }
+
+    function updateOrbitFromSliders() {
+      state.rotX = Number(document.getElementById('tilt-x').value);
+      state.rotY = Number(document.getElementById('tilt-y').value);
+      state.rotZ = Number(document.getElementById('tilt-z').value);
+      document.getElementById('tilt-x-val').textContent = state.rotX + '°';
+      document.getElementById('tilt-y-val').textContent = state.rotY + '°';
+      document.getElementById('tilt-z-val').textContent = state.rotZ + '°';
+      renderTransform();
+    }
+
+    function setDragMode(mode) {
+      state.dragMode = mode;
+      document.getElementById('btn-drag-pan').classList.toggle('active', mode === 'pan');
+      document.getElementById('btn-drag-orbit').classList.toggle('active', mode === 'orbit');
+      document.getElementById('hud-drag').textContent = mode === 'pan' ? 'Pan' : '3D Orbit';
+    }
+
+    function setDimensionMode(mode) {
+      state.mode = mode;
+      if (svgEl) svgEl.setAttribute('data-mode', mode);
+      document.getElementById('mode-3d-btn').classList.toggle('active', mode === '3d');
+      document.getElementById('mode-2d-btn').classList.toggle('active', mode === '2d');
+      document.getElementById('badge-mode').textContent = mode === '2d' ? '2D Flat Vector' : '3D Volumetric';
+      document.getElementById('hud-mode').textContent = mode.toUpperCase();
+    }
+
+    function setColorMode(cMode) {
+      state.colorMode = cMode;
+      if (svgEl) svgEl.setAttribute('data-color-mode', cMode);
+      if (cMode === 'color') applyPaletteToSolids(state.palette);
+      document.getElementById('color-mono-btn').classList.toggle('active', cMode === 'mono');
+      document.getElementById('color-full-btn').classList.toggle('active', cMode === 'color');
+      document.getElementById('badge-color').textContent = cMode === 'color' ? 'Full Color (' + state.palette + ')' : 'Monochrome B&W';
+      document.getElementById('hud-color').textContent = cMode === 'color' ? 'Color' : 'Mono B&W';
+    }
+
+    function setTheme(theme) {
+      state.theme = theme;
+      if (svgEl) svgEl.setAttribute('data-theme', theme);
+      document.getElementById('theme-light-btn').classList.toggle('active', theme === 'light');
+      document.getElementById('theme-dark-btn').classList.toggle('active', theme === 'dark');
+    }
+
+    function setPalette(palName) {
+      state.palette = palName;
+      if (svgEl) svgEl.setAttribute('data-palette', palName);
+      setColorMode('color');
+      applyPaletteToSolids(palName);
+      document.querySelectorAll('#palette-grid .preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.pal === palName);
+      });
+    }
+
+    function setStrokeWeight(val) {
+      document.getElementById('stroke-weight-val').textContent = val + 'px';
+      if (svgEl) svgEl.style.setProperty('--anatomy-weight', val + 'px');
+    }
+
+    function setAnimation(anim) {
+      state.animate = anim;
+      if (svgEl) svgEl.setAttribute('data-animate', anim);
+      document.getElementById('hud-anim').textContent = anim;
+      document.querySelectorAll('#anim-grid .preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.anim === anim);
+      });
+    }
+
+    function setAnimSpeed(val) {
+      document.getElementById('anim-speed-val').textContent = val + 'x';
+      if (svgEl) svgEl.style.setProperty('--anim-speed', val);
+    }
+
+    function setBasePlate(show) {
+      state.showPlate = show;
+      if (svgEl) svgEl.setAttribute('data-plate', show ? 'visible' : 'hidden');
+      document.getElementById('plate-show-btn').classList.toggle('active', show);
+      document.getElementById('plate-hide-btn').classList.toggle('active', !show);
+    }
+
+    function setBackdrop(bg) {
+      viewport.setAttribute('data-backdrop', bg);
+      document.querySelectorAll('[data-bg]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bg === bg);
+      });
+    }
+
+    // Eventos del lienzo: Zoom con rueda + Drag para Pan o 3D Orbit
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.14 : -0.14;
+      zoomStep(delta, e.clientX, e.clientY);
+    }, { passive: false });
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.floating-dock')) return;
+      state.isDragging = true;
+      state.startX = e.clientX;
+      state.startY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!state.isDragging) return;
+      const dx = e.clientX - state.startX;
+      const dy = e.clientY - state.startY;
+      state.startX = e.clientX;
+      state.startY = e.clientY;
+
+      if (state.dragMode === 'orbit' || e.shiftKey) {
+        stopAutoSpin();
+        // Giro 360° continuo en eje Y y -90° a +90° en elevación X
+        state.rotY = +(state.rotY + dx * 0.45).toFixed(1);
+        state.rotX = Math.max(-90, Math.min(90, +(state.rotX - dy * 0.45).toFixed(1)));
+        
+        // Mapear al slider de -180 a 180 para feedback visual
+        const normY = ((((Math.round(state.rotY) + 180) % 360) + 360) % 360) - 180;
+        document.getElementById('tilt-x').value = state.rotX;
+        document.getElementById('tilt-y').value = normY;
+        document.getElementById('tilt-x-val').textContent = Math.round(state.rotX) + '°';
+        document.getElementById('tilt-y-val').textContent = Math.round(state.rotY) + '°';
+      } else {
+        state.panX += dx;
+        state.panY += dy;
+      }
+      renderTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      state.isDragging = false;
+    });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function getSerializedSvg() {
+      if (!svgEl) return '';
+      const clone = svgEl.cloneNode(true);
+      // Si el usuario ocultó la placa base, la removemos del SVG exportado para que quede 100% limpio
+      if (!state.showPlate) {
+        clone.querySelectorAll('.iso-base-plate').forEach(n => n.remove());
+      }
+      return clone.outerHTML;
+    }
+
+    function copySvg() {
+      const svg = getSerializedSvg();
+      navigator.clipboard.writeText(svg).then(() => {
+        showToast('✅ SVG copied to clipboard!');
+      });
+    }
+
+    function copyReactComponent() {
+      const svg = getSerializedSvg();
+      const jsx = `import React from 'react';
+
+export function Illustration3D({ className = '', style = {} }) {
+  return (
+    <div
+      className={className}
+      style={{ display: 'inline-block', width: '100%', ...style }}
+      dangerouslySetInnerHTML={{ __html: ${JSON.stringify(svg)} }}
+    />
+  );
+}`;
+      navigator.clipboard.writeText(jsx).then(() => {
+        showToast('⚛️ React <Illustration3D /> copied!');
+      });
+    }
+
+    function downloadSvg() {
+      const svg = getSerializedSvg();
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = 'tech_stack_spotlight'.replace(/^_+|_+$/g, '');
+      a.download = `${baseName}-${state.mode}-${state.colorMode}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('⬇ SVG Downloaded!');
+    }
+
+    // Inicializar estado de la UI
+    upgradeLegacySvgIfNeeded();
+    setDimensionMode(state.mode);
+    setTheme(state.theme);
+    setColorMode(state.colorMode);
+    setAnimation(state.animate);
+    setBasePlate(state.showPlate);
+    document.querySelectorAll('#palette-grid .preset-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.pal === state.palette);
+    });
   </script>
 </body>
 </html>

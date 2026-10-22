@@ -1,13 +1,19 @@
 import * as k from '../../engine/iso-kit.mjs';
 
 /**
- * Modelo de Ilustración Técnica Isométrica: Desk Computer (Macintosh 128k / 1984)
- * Genera el objeto físico completo con teclado mecánico, cable espiral y pantalla CRT.
+ * Modelo de Ilustración Técnica (2D Plano y 3D Isométrico): Desk Computer (Macintosh 128k / 1984)
+ * Genera el objeto físico completo con teclado mecánico, cable espiral y pantalla CRT,
+ * soportando vista 2D/3D, modo Blanco y Negro o Color, sin placa base y animaciones.
  */
 export function renderDeskComputerModel({
   width = 600,
   height = 440,
-  theme = 'light', // 'light' o 'dark'
+  theme = 'light',
+  mode = '3d',
+  colorMode = 'mono',
+  palette = 'warm-craft',
+  animate = 'static',
+  showPlate = true,
   screenText = 'hello, world',
   showLogo = true,
   prompt = '> '
@@ -47,166 +53,232 @@ export function renderDeskComputerModel({
   const PORT = { y: 28, z: 9 };
   const COIL = { x: 80, z: 3.6, r: 3.2, from: 44, to: 84, turns: 17 };
 
-  const P = k.fitProjection(
-    [...k.boxCorners(PLATE, -PLATE_H - FOOT_H, 0), ...k.boxCorners(CASE, 0, TOP)],
-    width,
-    height,
-    { pad: 30, azimuth: 56 }
-  );
-
-  const at = (point) => k.iso(point, P);
-  const S = (paths, style) => k.solidSvg(paths, style);
-  const L = (d, style) => k.lineSvg(d, style);
-  const D = (points, style) => k.dotsSvg(points, style);
-  const byDepth = (points) => [...points].sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P));
-  const planeOf = (y) => k.sideMatrix([0, y], 0, P, "left");
-  const flat = (x0, z0, x1, z1, r, steps = 6) => k.pathOf(k.roundedPlan({ x: x0, y: z0, w: x1 - x0, d: z1 - z0, r }, steps).map(([u, z]) => [u, -z]), true);
-  const sideSlot = (y, z0, z1, half = 0.8) => k.pathOf(k.roundedPlan({ x: y - half, y: z0, w: half * 2, d: z1 - z0, r: half }, 4).map(([u, z]) => at([SIDE, u, z])), true);
-
   let clips = 0;
-  function recess({ x0, x1, z0, z1, r, depth }, y, back = "", backClass = "pc-well", inside = "") {
-    const id = `pc-clip-${clips++}`;
-    const ring = k.roundedPlan({ x: x0, y: z0, w: x1 - x0, d: z1 - z0, r }, 6);
-    const cx = (x0 + x1) / 2;
-    const cz = (z0 + z1) / 2;
-    const { sinA } = k.cameraOf(P);
-    const tops = [];
-    const sides = [[], [], [], []];
-    ring.forEach(([ax, az], index) => {
-      const [bx, bz] = ring[(index + 1) % ring.length];
-      const length = Math.hypot(bx - ax, bz - az) || 1;
-      let [nx, nz] = [(bz - az) / length, -(bx - ax) / length];
-      if (nx * (cx - (ax + bx) / 2) + nz * (cz - (az + bz) / 2) < 0) [nx, nz] = [-nx, -nz];
-      if (nx <= 0 && nz <= 0) return;
-      const quad = k.pathOf([at([ax, y, az]), at([bx, y, bz]), at([bx, y - depth, bz]), at([ax, y - depth, az])], true);
-      if (nz >= nx) tops.push(quad);
-      else sides[Math.min(3, Math.max(0, Math.floor(((nx * -sinA + 1) / 2) * 4)))].push(quad);
-    });
-    const shape = flat(x0, z0, x1, z1, r);
-    return [
-      `<clipPath id="${id}"><path transform="${planeOf(y)}" d="${shape}"/></clipPath>`,
-      `<g clip-path="url(#${id})">`,
-      `<path class="iso-top" d="${tops.join("")}"/>`,
-      ...sides.map((d, shade) => (d.length ? `<path class="iso-shade" data-shade="${shade}" d="${d.join("")}"/>` : "")),
-      `<g transform="${planeOf(y - depth)}"><path class="${backClass}" d="${shape}"/>${back}<path class="iso-line" data-tone="faint" d="${shape}"/></g>`,
-      inside,
-      `</g>`,
-      `<g transform="${planeOf(y)}"><path class="iso-line" data-tone="lo" d="${shape}"/></g>`,
-    ].join("");
-  }
 
-  function plate() {
-    const out = [`<path class="iso-halo" d="${k.haloOf(PLATE, -PLATE_H - FOOT_H, PLATE_H, P)}"/>`];
-    for (const [x, y] of byDepth(k.corners(PLATE, 22))) {
-      out.push(S(k.cylinder(x, y, 7, -PLATE_H - FOOT_H, 1.6, P, 28), { tone: "lo" }));
-      out.push(S(k.cylinder(x, y, 5.4, -PLATE_H - FOOT_H + 1.6, FOOT_H - 1.6, P, 28), { tone: "mid" }));
+  function build3D() {
+    const P = k.fitProjection(
+      [...k.boxCorners(PLATE, -PLATE_H - FOOT_H, 0), ...k.boxCorners(CASE, 0, TOP)],
+      width,
+      height,
+      { pad: 30, azimuth: 56, mode: '3d', palette }
+    );
+
+    const at = (point) => k.iso(point, P);
+    const S = (paths, style) => k.solidSvg(paths, { palette, ...style });
+    const L = (d, style) => k.lineSvg(d, { palette, ...style });
+    const D = (points, style) => k.dotsSvg(points, style);
+    const byDepth = (points) => [...points].sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P));
+    const planeOf = (y) => k.sideMatrix([0, y], 0, P, "left");
+    const flat = (x0, z0, x1, z1, r, steps = 6) => k.pathOf(k.roundedPlan({ x: x0, y: z0, w: x1 - x0, d: z1 - z0, r }, steps).map(([u, z]) => [u, -z]), true);
+    const sideSlot = (y, z0, z1, half = 0.8) => k.pathOf(k.roundedPlan({ x: y - half, y: z0, w: half * 2, d: z1 - z0, r: half }, 4).map(([u, z]) => at([SIDE, u, z])), true);
+
+    function recess({ x0, x1, z0, z1, r, depth }, y, back = "", backClass = "pc-well", inside = "") {
+      const id = `pc-clip-${clips++}`;
+      const ring = k.roundedPlan({ x: x0, y: z0, w: x1 - x0, d: z1 - z0, r }, 6);
+      const cx = (x0 + x1) / 2;
+      const cz = (z0 + z1) / 2;
+      const { sinA } = k.cameraOf(P);
+      const tops = [];
+      const sides = [[], [], [], []];
+      ring.forEach(([ax, az], index) => {
+        const [bx, bz] = ring[(index + 1) % ring.length];
+        const length = Math.hypot(bx - ax, bz - az) || 1;
+        let [nx, nz] = [(bz - az) / length, -(bx - ax) / length];
+        if (nx * (cx - (ax + bx) / 2) + nz * (cz - (az + bz) / 2) < 0) [nx, nz] = [-nx, -nz];
+        if (nx <= 0 && nz <= 0) return;
+        const quad = k.pathOf([at([ax, y, az]), at([bx, y, bz]), at([bx, y - depth, bz]), at([ax, y - depth, az])], true);
+        if (nz >= nx) tops.push(quad);
+        else sides[Math.min(3, Math.max(0, Math.floor(((nx * -sinA + 1) / 2) * 4)))].push(quad);
+      });
+      const shape = flat(x0, z0, x1, z1, r);
+      return [
+        `<clipPath id="${id}"><path transform="${planeOf(y)}" d="${shape}"/></clipPath>`,
+        `<g clip-path="url(#${id})">`,
+        `<path class="iso-top" d="${tops.join("")}"/>`,
+        ...sides.map((d, shade) => (d.length ? `<path class="iso-shade" data-shade="${shade}" d="${d.join("")}"/>` : "")),
+        `<g transform="${planeOf(y - depth)}"><path class="${backClass}" d="${shape}"/>${back}<path class="iso-line" data-tone="faint" d="${shape}"/></g>`,
+        inside,
+        `</g>`,
+        `<g transform="${planeOf(y)}"><path class="iso-line" data-tone="lo" d="${shape}"/></g>`,
+      ].join("");
     }
-    out.push(S(k.slabOf(PLATE, -PLATE_H, PLATE_H, P, 8, 1.6), { tone: "mid" }));
-    out.push(L(k.planOutline(k.insetPlan(PLATE, 5), 0, P), { tone: "lo" }));
-    const screws = k.corners(PLATE, 10);
-    out.push(L(screws.map(([x, y]) => k.ring(x, y, 2.2, 0, P, 16)).join(""), { tone: "lo" }));
-    out.push(D(screws.map(([x, y]) => at([x, y, 0])), { size: 0.5 }));
-    const label = { x: -88, y: 144, w: 40, d: 9, r: 1.2 };
-    out.push(S(k.slabOf(label, 0, 0.8, P, 3), { tone: "lo", crease: "none" }));
-    out.push(L([30, 22].map((w, i) => k.lineOnTop([label.x + 4, label.y + 3 + i * 3], [label.x + 4 + w, label.y + 3 + i * 3], 0.8, P)).join(""), { tone: "lo", free: true }));
-    out.push(D([at([label.x + label.w - 3, label.y + label.d / 2, 0.8])], { size: 0.45 }));
-    return out.join("");
-  }
 
-  function screen() {
-    const H = 19;
-    const left = -H * 0.61;
-    const base = CRT_MID + 2;
-    const glyph = (points) => k.pathOf(points.map(([gx, gy]) => [left + gx * H, -(base + gy * H)]), true);
-    const logo = showLogo ? (
-      glyph([[0, 0], [0.37, 1], [0.55, 1], [0.92, 0], [0.71, 0], [0.63, 0.23], [0.29, 0.23], [0.21, 0]]) +
-      glyph([[0.35, 0.41], [0.57, 0.41], [0.46, 0.72]]) +
-      glyph([[0.68, 1], [0.89, 1], [1.26, 0], [1.05, 0]])
-    ) : '';
-
-    const lines = [];
-    for (let z = CRT.z0 + 1.2; z < CRT.z1; z += 1.6) lines.push(`M${CRT.x0} ${(-z).toFixed(1)}H${CRT.x1}`);
-    const glow = flat(-30, CRT.z0 + 8, 30, CRT.z1 - 8, 26, 10);
-    const textX = CRT.x0 + 8;
-    const textZ = CRT.z0 + 14;
-    const crt = [
-      `<path class="pc-glow" d="${glow}"/>`,
-      `<path class="pc-scan" d="${lines.join("")}"/>`,
-      logo ? `<path class="pc-logo" d="${logo}"/>` : '',
-      `<text class="pc-text" x="${textX}" y="${-textZ}" font-size="5.2">${prompt}${screenText}</text>`,
-      `<rect class="pc-cursor" x="${textX + (prompt.length + screenText.length) * 3.4}" y="${-textZ - 4.2}" width="3" height="5"/>`,
-    ].join("");
-    const back = [
-      `<g data-part="crt">${crt}</g>`,
-      `<path class="iso-line" data-tone="lo" d="M${CRT.x0 + 6} ${-(CRT.z1 - 16)}Q${CRT.x0 + 7} ${-(CRT.z1 - 7)} ${CRT.x0 + 16} ${-(CRT.z1 - 6)}"/>`,
-    ].join("");
-    return recess(BEZEL, FRONT, "", "pc-bezel", recess(CRT, FRONT - BEZEL.depth, back, "pc-glass"));
-  }
-
-  function computer() {
-    const out = [`<path class="iso-halo" d="${k.haloOf(CASE, 0, 8, P)}"/>`];
-    out.push(S(k.slabOf(k.insetPlan(CASE, 3), 0, PLINTH_H, P, 8), { tone: "lo" }));
-    out.push(S(k.slabOf(CASE, PLINTH_H, TOP - PLINTH_H, P, 8, 1.6), { tone: "mid" }));
-    const handle = { x: -42, y: CASE.y + 7, w: 84, d: 11, r: 5.5 };
-    out.push(L(k.planOutline(handle, TOP, P, 8), { tone: "lo" }));
-    out.push(L(k.planOutline(k.insetPlan(handle, 2.2), TOP, P, 8), { tone: "faint" }));
-    out.push(L(Array.from({ length: 7 }, (_, i) => k.planOutline({ x: -34, y: CASE.y + 27.3 + i * 3.4, w: 68, d: 1.4, r: 0.7 }, TOP, P, 4)).join(""), { tone: "faint" }));
-    out.push(L(k.lineOnTop([CASE.x, SEAM], [SIDE, SEAM], TOP, P) + k.segment([SIDE, SEAM, TOP], [SIDE, SEAM, PLINTH_H], P), { tone: "lo" }));
-    const rowOf = (from, to) => Array.from({ length: Math.floor((to - from) / 3.2 + 1e-9) + 1 }, (_, i) => from + i * 3.2);
-    out.push(L(rowOf(CASE.y + 10, CASE.y + 52).map((y) => sideSlot(y, TOP - 48, TOP - 14)).join(""), { tone: "faint" }));
-    out.push(L(rowOf(CASE.y + 10, CASE.y + 40).map((y) => sideSlot(y, 20, 30)).join(""), { tone: "faint" }));
-    out.push(`<g transform="${planeOf(FRONT)}"><path class="iso-line" data-tone="faint" d="${flat(CASE.x + 4, PLINTH_H + 4, SIDE - 4, TOP - 4, 5)}"/></g>`);
-    out.push(screen());
-    out.push(recess(SLOT, FRONT, `<path class="iso-line" data-tone="lo" d="M${SLOT.x0} ${-(SLOT.z0 + 1.6)}H${SLOT.x1}"/>`, "pc-dark"));
-    out.push(D([at([SLOT.x1 + 4, FRONT, SLOT.z0 - 1])], { size: 0.5, tone: "mid" }));
-    out.push(`<g transform="${planeOf(FRONT)}">${L(Array.from({ length: 9 }, (_, i) => flat(-46.7 + i * 3, 42, -45.3 + i * 3, 54, 0.7, 4)).join(""), { tone: "lo" })}</g>`);
-    out.push(`<g data-part="led">${D([at([-46, FRONT, 36])], { size: 0.8, tone: "hi" })}</g>`);
-    
-    // Rocker switch
-    const yRocker = CASE.y + 8;
-    out.push(S(k.slabOf({ x: SIDE, y: yRocker, w: 1.2, d: 12, r: 1 }, 12, 15, P, 3), { tone: "mid" }));
-    out.push(S(k.slabOf({ x: SIDE + 1.2, y: yRocker + 1.5, w: 2.4, d: 9, r: 0.6 }, 13, 5.6, P, 2), { tone: "mid" }));
-    
-    // Side port
-    out.push(S(k.slabOf({ x: SIDE - 0.4, y: PORT.y - 1, w: 1.4, d: 10, r: 1 }, PORT.z - 1, 9, P, 3), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: SIDE + 1, y: PORT.y, w: 4.4, d: 8, r: 1 }, PORT.z, 7, P, 3, 0.4), { tone: "mid" }));
-    out.push(S(k.slabOf({ x: SIDE + 5.4, y: PORT.y + 2, w: 5, d: 4, r: 1.6 }, PORT.z + 1.5, 4, P, 4), { tone: "mid" }));
-    out.push(D([at([SIDE + 3.2, PORT.y + 1.6, PORT.z + 7]), at([SIDE + 3.2, PORT.y + 6.4, PORT.z + 7])], { size: 0.4 }));
-
-    return `<g class="pc-computer">${out.join("")}</g>`;
-  }
-
-  function keyboard() {
-    const out = [`<path class="iso-halo" d="${k.haloOf(KB, 0, 4, P)}"/>`];
-    for (const [x, y] of byDepth(k.corners(KB, 8))) out.push(S(k.cylinder(x, y, 2.8, 0, KB_Z, P, 16), { tone: "lo" }));
-    out.push(S(k.slabOf(KB, KB_Z, KB_TOP - KB_Z, P, 6, 1), { tone: "mid" }));
-    const well = { x: KEYS_X - 1.4, y: KEYS_Y - 1.4, w: U * 15 + 2.8, d: U * 5 + 2.8, r: 2 };
-    out.push(L(k.planOutline(well, KB_TOP, P, 4), { tone: "lo" }));
-    out.push(D([at([KB.x + 4, KB.y + 2.4, KB_TOP]), at([KB.x + KB.w - 4, KB.y + 2.4, KB_TOP])], { size: 0.45 }));
-    ROWS.forEach((row, r) => {
-      let x = KEYS_X;
-      for (const [code, widthKey] of row) {
-        const plan = { x: x + 0.7, y: KEYS_Y + r * U + 0.7, w: widthKey * U - 1.4, d: U - 1.4, r: 1.4 };
-        const h = ROW_H[r];
-        const dish = code === " " ? k.planOutline(k.insetPlan(plan, 1.8), KB_TOP + h, P, 3) : k.planOutline(k.insetPlan(plan, 1.6), KB_TOP + h, P, 3);
-        out.push(`<g class="pc-key">${S(k.slabOf(plan, KB_TOP, h, P, 3, 0.4), { tone: "mid", crease: "faint" })}${L(dish, { tone: "faint" })}</g>`);
-        x += widthKey * U;
+    function plate() {
+      const out = [`<path class="iso-halo" d="${k.haloOf(PLATE, -PLATE_H - FOOT_H, PLATE_H, P)}"/>`];
+      for (const [x, y] of byDepth(k.corners(PLATE, 22))) {
+        out.push(S(k.cylinder(x, y, 7, -PLATE_H - FOOT_H, 1.6, P, 28), { tone: "lo", color: "panel" }));
+        out.push(S(k.cylinder(x, y, 5.4, -PLATE_H - FOOT_H + 1.6, FOOT_H - 1.6, P, 28), { tone: "mid", color: "panel" }));
       }
-    });
-    out.push(S(k.slabOf({ x: KB.x + KB.w, y: 90, w: 4, d: 4, r: 1.5 }, 2.5, 4, P, 4), { tone: "mid" }));
-    return out.join("");
+      out.push(S(k.slabOf(PLATE, -PLATE_H, PLATE_H, P, 8, 1.6), { tone: "mid", color: "panel" }));
+      out.push(L(k.planOutline(k.insetPlan(PLATE, 5), 0, P), { tone: "lo" }));
+      const screws = k.corners(PLATE, 10);
+      out.push(L(screws.map(([x, y]) => k.ring(x, y, 2.2, 0, P, 16)).join(""), { tone: "lo" }));
+      out.push(D(screws.map(([x, y]) => at([x, y, 0])), { size: 0.5 }));
+      const label = { x: -88, y: 144, w: 40, d: 9, r: 1.2 };
+      out.push(S(k.slabOf(label, 0, 0.8, P, 3), { tone: "lo", crease: "none", color: "gold" }));
+      out.push(L([30, 22].map((w, i) => k.lineOnTop([label.x + 4, label.y + 3 + i * 3], [label.x + 4 + w, label.y + 3 + i * 3], 0.8, P)).join(""), { tone: "lo", free: true }));
+      out.push(D([at([label.x + label.w - 3, label.y + label.d / 2, 0.8])], { size: 0.45 }));
+      return `<g class="iso-base-plate" data-layer="base">${out.join("")}</g>`;
+    }
+
+    function screen() {
+      const H = 19;
+      const left = -H * 0.61;
+      const base = CRT_MID + 2;
+      const glyph = (points) => k.pathOf(points.map(([gx, gy]) => [left + gx * H, -(base + gy * H)]), true);
+      const logo = showLogo ? (
+        glyph([[0, 0], [0.37, 1], [0.55, 1], [0.92, 0], [0.71, 0], [0.63, 0.23], [0.29, 0.23], [0.21, 0]]) +
+        glyph([[0.35, 0.41], [0.57, 0.41], [0.46, 0.72]]) +
+        glyph([[0.68, 1], [0.89, 1], [1.26, 0], [1.05, 0]])
+      ) : '';
+
+      const lines = [];
+      for (let z = CRT.z0 + 1.2; z < CRT.z1; z += 1.6) lines.push(`M${CRT.x0} ${(-z).toFixed(1)}H${CRT.x1}`);
+      const glow = flat(-30, CRT.z0 + 8, 30, CRT.z1 - 8, 26, 10);
+      const textX = CRT.x0 + 8;
+      const textZ = CRT.z0 + 14;
+      const crt = [
+        `<path class="pc-glow" d="${glow}"/>`,
+        `<path class="pc-scan" d="${lines.join("")}"/>`,
+        logo ? `<path class="pc-logo" d="${logo}"/>` : '',
+        `<text class="pc-text" x="${textX}" y="${-textZ}" font-size="5.2">${prompt}${screenText}</text>`,
+        `<rect class="pc-cursor" x="${textX + (prompt.length + screenText.length) * 3.4}" y="${-textZ - 4.2}" width="3" height="5"/>`,
+      ].join("");
+      const back = [
+        `<g data-part="crt">${crt}</g>`,
+        `<path class="iso-line" data-tone="lo" d="M${CRT.x0 + 6} ${-(CRT.z1 - 16)}Q${CRT.x0 + 7} ${-(CRT.z1 - 7)} ${CRT.x0 + 16} ${-(CRT.z1 - 6)}"/>`,
+      ].join("");
+      return recess(BEZEL, FRONT, "", "pc-bezel", recess(CRT, FRONT - BEZEL.depth, back, "pc-glass"));
+    }
+
+    function computer() {
+      const out = [`<path class="iso-halo" d="${k.haloOf(CASE, 0, 8, P)}"/>`];
+      out.push(S(k.slabOf(k.insetPlan(CASE, 3), 0, PLINTH_H, P, 8), { tone: "lo", color: "copper" }));
+      out.push(S(k.slabOf(CASE, PLINTH_H, TOP - PLINTH_H, P, 8, 1.6), { tone: "mid", color: "chassis" }));
+      const handle = { x: -42, y: CASE.y + 7, w: 84, d: 11, r: 5.5 };
+      out.push(L(k.planOutline(handle, TOP, P, 8), { tone: "lo" }));
+      out.push(L(k.planOutline(k.insetPlan(handle, 2.2), TOP, P, 8), { tone: "faint" }));
+      out.push(L(Array.from({ length: 7 }, (_, i) => k.planOutline({ x: -34, y: CASE.y + 27.3 + i * 3.4, w: 68, d: 1.4, r: 0.7 }, TOP, P, 4)).join(""), { tone: "faint" }));
+      out.push(L(k.lineOnTop([CASE.x, SEAM], [SIDE, SEAM], TOP, P) + k.segment([SIDE, SEAM, TOP], [SIDE, SEAM, PLINTH_H], P), { tone: "lo" }));
+      const rowOf = (from, to) => Array.from({ length: Math.floor((to - from) / 3.2 + 1e-9) + 1 }, (_, i) => from + i * 3.2);
+      out.push(L(rowOf(CASE.y + 10, CASE.y + 52).map((y) => sideSlot(y, TOP - 48, TOP - 14)).join(""), { tone: "faint" }));
+      out.push(L(rowOf(CASE.y + 10, CASE.y + 40).map((y) => sideSlot(y, 20, 30)).join(""), { tone: "faint" }));
+      out.push(`<g transform="${planeOf(FRONT)}"><path class="iso-line" data-tone="faint" d="${flat(CASE.x + 4, PLINTH_H + 4, SIDE - 4, TOP - 4, 5)}"/></g>`);
+      out.push(screen());
+      out.push(recess(SLOT, FRONT, `<path class="iso-line" data-tone="lo" d="M${SLOT.x0} ${-(SLOT.z0 + 1.6)}H${SLOT.x1}"/>`, "pc-dark"));
+      out.push(D([at([SLOT.x1 + 4, FRONT, SLOT.z0 - 1])], { size: 0.5, tone: "green" }));
+      out.push(`<g transform="${planeOf(FRONT)}">${L(Array.from({ length: 9 }, (_, i) => flat(-46.7 + i * 3, 42, -45.3 + i * 3, 54, 0.7, 4)).join(""), { tone: "lo" })}</g>`);
+      out.push(`<g data-part="led">${D([at([-46, FRONT, 36])], { size: 0.8, tone: "red" })}</g>`);
+
+      const yRocker = CASE.y + 8;
+      out.push(S(k.slabOf({ x: SIDE, y: yRocker, w: 1.2, d: 12, r: 1 }, 12, 15, P, 3), { tone: "mid", color: "accent" }));
+      out.push(S(k.slabOf({ x: SIDE + 1.2, y: yRocker + 1.5, w: 2.4, d: 9, r: 0.6 }, 13, 5.6, P, 2), { tone: "mid", color: "accent" }));
+
+      out.push(S(k.slabOf({ x: SIDE - 0.4, y: PORT.y - 1, w: 1.4, d: 10, r: 1 }, PORT.z - 1, 9, P, 3), { tone: "lo", color: "copper" }));
+      out.push(S(k.slabOf({ x: SIDE + 1, y: PORT.y, w: 4.4, d: 8, r: 1 }, PORT.z, 7, P, 3, 0.4), { tone: "mid", color: "copper" }));
+      out.push(S(k.slabOf({ x: SIDE + 5.4, y: PORT.y + 2, w: 5, d: 4, r: 1.6 }, PORT.z + 1.5, 4, P, 4), { tone: "mid", color: "copper" }));
+      out.push(D([at([SIDE + 3.2, PORT.y + 1.6, PORT.z + 7]), at([SIDE + 3.2, PORT.y + 6.4, PORT.z + 7])], { size: 0.4 }));
+
+      return `<g class="pc-computer" data-layer="main">${out.join("")}</g>`;
+    }
+
+    function keyboard() {
+      const out = [`<path class="iso-halo" d="${k.haloOf(KB, 0, 4, P)}"/>`];
+      for (const [x, y] of byDepth(k.corners(KB, 8))) out.push(S(k.cylinder(x, y, 2.8, 0, KB_Z, P, 16), { tone: "lo" }));
+      out.push(S(k.slabOf(KB, KB_Z, KB_TOP - KB_Z, P, 6, 1), { tone: "mid", color: "chassis" }));
+      const well = { x: KEYS_X - 1.4, y: KEYS_Y - 1.4, w: U * 15 + 2.8, d: U * 5 + 2.8, r: 2 };
+      out.push(L(k.planOutline(well, KB_TOP, P, 4), { tone: "lo" }));
+      out.push(D([at([KB.x + 4, KB.y + 2.4, KB_TOP]), at([KB.x + KB.w - 4, KB.y + 2.4, KB_TOP])], { size: 0.45 }));
+      ROWS.forEach((row, r) => {
+        let x = KEYS_X;
+        for (const [code, widthKey] of row) {
+          const plan = { x: x + 0.7, y: KEYS_Y + r * U + 0.7, w: widthKey * U - 1.4, d: U - 1.4, r: 1.4 };
+          const h = ROW_H[r];
+          const isAccentKey = code === "Enter" || code === "Backspace" || code === "Meta";
+          const dish = code === " " ? k.planOutline(k.insetPlan(plan, 1.8), KB_TOP + h, P, 3) : k.planOutline(k.insetPlan(plan, 1.6), KB_TOP + h, P, 3);
+          out.push(`<g class="pc-key">${S(k.slabOf(plan, KB_TOP, h, P, 3, 0.4), { tone: "mid", crease: "faint", color: isAccentKey ? "accent" : "gold" })}${L(dish, { tone: "faint" })}</g>`);
+          x += widthKey * U;
+        }
+      });
+      out.push(S(k.slabOf({ x: KB.x + KB.w, y: 90, w: 4, d: 4, r: 1.5 }, 2.5, 4, P, 4), { tone: "mid", color: "copper" }));
+      return `<g data-layer="detail">${out.join("")}</g>`;
+    }
+
+    function cable() {
+      const out = [];
+      const curve = (points) => k.pathOf(points.map((point) => at(point)));
+      const start = [COIL.x + COIL.r, COIL.from, COIL.z];
+      const end = [COIL.x + COIL.r, COIL.to, COIL.z];
+      out.push(`<path class="iso-line pc-cord" data-tone="mid" d="${curve([[SIDE + 10.4, PORT.y + 4, PORT.z + 3.5], [SIDE + 14, PORT.y + 6, PORT.z + 2.4], [SIDE + 17, PORT.y + 9.5, PORT.z - 1], [SIDE + 19.6, PORT.y + 13, COIL.z + 1.6], start])}"/>`);
+      const spring = k.coil(COIL.from, COIL.to, [COIL.x, COIL.z], COIL.r, COIL.turns, "y", P);
+      out.push(L(spring.back, { tone: "lo" }), L(spring.front, { tone: "mid", color: "copper" }));
+      out.push(`<path class="iso-line pc-cord" data-tone="mid" d="${curve([end, [COIL.x + 2.6, COIL.to + 3, COIL.z + 0.2], [KB.x + KB.w + 6.4, 91.4, 4.4], [KB.x + KB.w + 4, 92, 4.5]])}"/>`);
+      return `<g data-layer="detail">${out.join("")}</g>`;
+    }
+
+    return [plate(), computer(), keyboard(), cable()].join('\n    ');
   }
 
-  function cable() {
+  // Vista 2D Plana frontal/ortográfica limpia (estilo ilustración técnica plana de frente + teclado)
+  function build2D() {
+    const cx = width / 2;
+    const cy = height / 2 - 15;
+    const scale = Math.min(width / 320, height / 260);
+    const sx = (x) => Number((cx + x * scale).toFixed(1));
+    const sy = (y) => Number((cy + y * scale).toFixed(1));
+    const sw = (w) => Number((w * scale).toFixed(1));
+
+    const chassisShades = k.computeFourToneShades("chassis", palette);
+    const accentShades = k.computeFourToneShades("accent", palette);
+    const goldShades = k.computeFourToneShades("gold", palette);
+    const leafShades = k.computeFourToneShades("leaf", palette);
+
+    const rect2d = (x, y, w, h, r, shades, tone = "hi", extraClass = "") => {
+      const styleStr = shades ? `--c-top:${shades.top};--c-s0:${shades.s0};--c-s1:${shades.s1};--c-s2:${shades.s2};--c-s3:${shades.s3};--c-edge:${shades.edge}` : "";
+      return `<g class="iso-solid ${extraClass}" ${shades ? 'data-has-color=""' : ""} style="${styleStr}">
+        <rect class="iso-top" x="${sx(x)}" y="${sy(y)}" width="${sw(w)}" height="${sw(h)}" rx="${sw(r)}" />
+        <rect class="iso-line iso-edge" data-tone="${tone}" x="${sx(x)}" y="${sy(y)}" width="${sw(w)}" height="${sw(h)}" rx="${sw(r)}" />
+      </g>`;
+    };
+
     const out = [];
-    const curve = (points) => k.pathOf(points.map((point) => at(point)));
-    const start = [COIL.x + COIL.r, COIL.from, COIL.z];
-    const end = [COIL.x + COIL.r, COIL.to, COIL.z];
-    out.push(`<path class="iso-line pc-cord" data-tone="mid" d="${curve([[SIDE + 10.4, PORT.y + 4, PORT.z + 3.5], [SIDE + 14, PORT.y + 6, PORT.z + 2.4], [SIDE + 17, PORT.y + 9.5, PORT.z - 1], [SIDE + 19.6, PORT.y + 13, COIL.z + 1.6], start])}"/>`);
-    const spring = k.coil(COIL.from, COIL.to, [COIL.x, COIL.z], COIL.r, COIL.turns, "y", P);
-    out.push(L(spring.back, { tone: "lo" }), L(spring.front, { tone: "mid" }));
-    out.push(`<path class="iso-line pc-cord" data-tone="mid" d="${curve([end, [COIL.x + 2.6, COIL.to + 3, COIL.z + 0.2], [KB.x + KB.w + 6.4, 91.4, 4.4], [KB.x + KB.w + 4, 92, 4.5]])}"/>`);
-    return out.join("");
+    // Placa base 2D opcional
+    out.push(`<g class="iso-base-plate" data-layer="base">
+      ${rect2d(-115, -96, 230, 204, 10, k.computeFourToneShades("panel", palette), "lo")}
+      <circle cx="${sx(-102)}" cy="${sy(-84)}" r="${sw(2.2)}" class="iso-line" data-tone="lo"/>
+      <circle cx="${sx(102)}" cy="${sy(-84)}" r="${sw(2.2)}" class="iso-line" data-tone="lo"/>
+      <circle cx="${sx(-102)}" cy="${sy(96)}" r="${sw(2.2)}" class="iso-line" data-tone="lo"/>
+      <circle cx="${sx(102)}" cy="${sy(96)}" r="${sw(2.2)}" class="iso-line" data-tone="lo"/>
+    </g>`);
+
+    // Cuerpo frontal del Macintosh en 2D
+    out.push(`<g data-layer="main">
+      ${rect2d(-54, -84, 108, 128, 7, chassisShades, "hi")}
+      ${rect2d(-48, -78, 96, 114, 5, chassisShades, "lo")}
+      ${rect2d(-42, -72, 84, 64, 6, k.computeFourToneShades("slate", palette), "mid")}
+      <rect class="pc-glass" x="${sx(-38)}" y="${sy(-68)}" width="${sw(76)}" height="${sw(56)}" rx="${sw(5)}" />
+      <text class="pc-text" x="${sx(-31)}" y="${sy(-36)}" font-size="${sw(6.5)}">${prompt}${screenText}</text>
+      <rect class="pc-cursor" x="${sx(-31 + (prompt.length + screenText.length) * 3.9)}" y="${sy(-42)}" width="${sw(3.6)}" height="${sw(6.5)}"/>
+      ${rect2d(6, 8, 34, 5.5, 1.8, k.computeFourToneShades("copper", palette), "mid")}
+      ${rect2d(-40, 22, 10, 6, 1.2, accentShades, "mid")}
+    </g>`);
+
+    // Teclado frontal/cenital 2D + cable
+    const kbKeys = [];
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 12; c++) {
+        const kx = -60 + c * 10;
+        const ky = 56 + r * 8;
+        kbKeys.push(rect2d(kx, ky, 8.6, 6.6, 1.2, (r === 1 && c === 11) ? accentShades : goldShades, "lo"));
+      }
+    }
+    out.push(`<g data-layer="detail">
+      ${rect2d(-66, 51, 132, 42, 4, chassisShades, "hi")}
+      ${kbKeys.join("")}
+      <circle cx="${sx(34)}" cy="${sy(11)}" r="${sw(1.2)}" fill="${leafShades?.s2 || '#10b981'}" />
+    </g>`);
+
+    return out.join("\n    ");
   }
 
   const customCss = `
@@ -214,24 +286,28 @@ export function renderDeskComputerModel({
   .pc-bezel{fill:var(--anatomy-top)}
   .pc-dark{fill:var(--anatomy-shade-0)}
   .pc-glass{fill:var(--anatomy-shade-0)}
+  .iso[data-color-mode="color"] .pc-glass{fill:#0f172a}
   .pc-glow{fill:var(--anatomy-lit);opacity:.07;filter:blur(6px)}
   .pc-scan{fill:none;stroke:var(--anatomy-faint);stroke-width:.5px;vector-effect:non-scaling-stroke;opacity:.7}
   .pc-logo{fill:var(--anatomy-lit);fill-rule:evenodd}
   .pc-text{fill:var(--anatomy-lit);font-family:var(--anatomy-mono);letter-spacing:.02em}
+  .iso[data-color-mode="color"] .pc-text,.iso[data-color-mode="color"] .pc-cursor,.iso[data-color-mode="color"] .pc-logo{fill:#34d399}
   .pc-cursor{fill:var(--anatomy-lit)}
   .pc-cord{stroke-width:1.1px}
   `;
 
-  // Construir SVG autónomo
-  const body = [
-    `<style>${k.ISO_CSS}\n${customCss}</style>`,
-    plate(),
-    computer(),
-    keyboard(),
-    cable()
-  ];
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg iso" data-theme="${theme}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Desk computer isometric illustration">
-  ${body.join('\n  ')}
-</svg>`;
+  return k.wrapDualModeSvg({
+    width,
+    height,
+    theme,
+    mode,
+    colorMode,
+    palette,
+    animate,
+    showPlate,
+    label: "Desk computer technical illustration (2D & 3D)",
+    extraCss: customCss,
+    view3d: build3D(),
+    view2d: build2D()
+  });
 }

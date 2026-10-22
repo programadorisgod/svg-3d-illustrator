@@ -8,10 +8,21 @@
     "svg-3d": "./bin/svg-3d.mjs"
   },
   "scripts": {
+    "dev": "hyperframes preview",
+    "check": "hyperframes check",
+    "render": "hyperframes render",
+    "publish": "hyperframes publish",
     "test": "node test/verify.test.js",
     "render-samples": "node test/render-samples.js"
   },
-  "keywords": ["svg", "3d", "isometric", "illustrations", "ai-agents", "design-system"],
+  "keywords": [
+    "svg",
+    "3d",
+    "isometric",
+    "illustrations",
+    "ai-agents",
+    "design-system"
+  ],
   "author": "Antigravity",
   "license": "MIT"
 }

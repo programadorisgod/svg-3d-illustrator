@@ -13,17 +13,27 @@ import { renderCodeTerminalPrimitive } from '../catalog/primitives/code-terminal
 import { renderNetworkNodePrimitive } from '../catalog/primitives/network-node.js';
 import { renderConnectorWirePrimitive } from '../catalog/primitives/connector-wire.js';
 
-// Modelos de artesanía técnica inspirados en Anatomy
+// Modelos de ilustración vectorial 2D/3D (Físicos, Técnicos y Orgánicos)
 import { renderDeskComputerModel } from '../catalog/craft/desk-computer.js';
 import { renderSortingDeskModel } from '../catalog/craft/sorting-desk.js';
 import { renderDialIndicatorModel } from '../catalog/craft/dial-indicator.js';
 import { renderServerBladeModel } from '../catalog/craft/server-blade.js';
+import { renderBloomFlowerModel } from '../catalog/craft/bloom-flower.js';
+import { renderEnginePistonModel } from '../catalog/craft/engine-piston.js';
+import { renderAstralBotCardModel } from '../catalog/craft/astral-bot-card.js';
+import { renderRocketLaunchCardModel } from '../catalog/craft/rocket-launch-card.js';
+import { renderRetroConsoleCardModel } from '../catalog/craft/retro-console-card.js';
 
 export const CRAFT_MODELS = {
   'desk-computer': renderDeskComputerModel,
   'sorting-desk': renderSortingDeskModel,
   'dial-indicator': renderDialIndicatorModel,
-  'server-blade': renderServerBladeModel
+  'server-blade': renderServerBladeModel,
+  'bloom-flower': renderBloomFlowerModel,
+  'engine-piston': renderEnginePistonModel,
+  'astral-bot-card': renderAstralBotCardModel,
+  'rocket-launch-card': renderRocketLaunchCardModel,
+  'retro-console-card': renderRetroConsoleCardModel
 };
 
 export const TEMPLATES = {
@@ -46,7 +56,7 @@ export const PRIMITIVES = {
  * Compila una escena declarativa a código SVG puro y determinista
  */
 export function compileScene(sceneSpec = {}) {
-  // Modo Craft puro (Ilustración técnica de objeto físico aislado estilo Anatomy)
+  // Modo Craft (Ilustración vectorial 2D/3D de objetos físicos u orgánicos con soporte de color, B&N y animaciones)
   if (sceneSpec.craft || sceneSpec.model) {
     const modelName = sceneSpec.craft || sceneSpec.model;
     const modelFn = CRAFT_MODELS[modelName];
@@ -55,6 +65,11 @@ export function compileScene(sceneSpec = {}) {
         width: sceneSpec.width,
         height: sceneSpec.height,
         theme: sceneSpec.theme || 'light',
+        mode: sceneSpec.mode || (['astral-bot-card', 'rocket-launch-card', 'retro-console-card'].includes(modelName) ? '2d' : '3d'),
+        colorMode: sceneSpec.colorMode || (['bloom-flower', 'engine-piston', 'astral-bot-card', 'rocket-launch-card', 'retro-console-card'].includes(modelName) ? 'color' : 'mono'),
+        palette: sceneSpec.palette || (modelName === 'bloom-flower' ? 'botanical' : 'vibrant'),
+        animate: sceneSpec.animate || (modelName === 'bloom-flower' ? 'bloom' : 'static'),
+        showPlate: sceneSpec.showPlate !== undefined ? sceneSpec.showPlate : (['astral-bot-card', 'rocket-launch-card', 'retro-console-card'].includes(modelName) ? false : true),
         ...(sceneSpec.params || {})
       });
     }

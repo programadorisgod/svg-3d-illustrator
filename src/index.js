@@ -1,7 +1,10 @@
-export { compileScene, TEMPLATES, PRIMITIVES } from './engine/compiler.js';
+export { compileScene, CRAFT_MODELS, TEMPLATES, PRIMITIVES } from './engine/compiler.js';
 export { PRESETS } from './tokens/presets.js';
 export { resolveTheme } from './tokens/theme.js';
 export { generateHtmlPreview } from './utils/preview-generator.js';
 export { wrapSvgDocument } from './utils/svg-writer.js';
+export { ANIMATION_PRESETS, ANIMATION_CSS } from './engine/animations.mjs';
 export * from './engine/isometric.js';
 export * from './engine/projection3d.js';
+export * as isoKit from './engine/iso-kit.mjs';
+export * as organicKit from './engine/organic-kit.mjs';

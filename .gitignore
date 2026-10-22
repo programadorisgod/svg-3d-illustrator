@@ -2,3 +2,14 @@ node_modules/
 .DS_Store
 *.log
 .system_generated/
+
+# HyperFrames
+.hyperframes/
+.thumbnails/
+product-intro/
+compositions/
+assets/
+renders/
+index.html
+hyperframes.json
+meta.json

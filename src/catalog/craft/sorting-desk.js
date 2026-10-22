@@ -1,187 +1,219 @@
 import * as k from '../../engine/iso-kit.mjs';
 
 /**
- * Modelo de Ilustración Técnica Isométrica: Sorting Workstation (Escritorio de clasificación postal / estación de trabajo)
- * Inspirado en Image 3: mesa con patas torneadas, gavetero de casilleros (cubbies), balanza con dial y sobres.
+ * Modelo de Ilustración Técnica (2D Plano y 3D Isométrico): Sorting Workstation
+ * Mesa de carpintería con patas torneadas, gavetero de casilleros huecos (cubbies)
+ * construidos con tabiques y repisas reales ordenados por profundidad Z,
+ * regla milimetrada, bandeja de sobres y balanza mecánica con plato superior.
  */
 export function renderSortingDeskModel({
   width = 700,
   height = 500,
-  theme = 'light'
+  theme = 'light',
+  mode = '3d',
+  colorMode = 'mono',
+  palette = 'warm-craft',
+  animate = 'static',
+  showPlate = true
 } = {}) {
-  // Dimensiones de la mesa base
   const TABLE = { x: -140, y: -70, w: 280, d: 140, r: 8 };
   const TABLE_TOP_Z = 70;
   const TABLE_SLAB_H = 8;
-  const LEG_R = 5;
 
-  // Gabinete de casilleros (Cubbies) en la parte trasera de la mesa
-  const CABINET = { x: -90, y: -60, w: 180, d: 45, r: 4 };
-  const CAB_BASE_Z = TABLE_TOP_Z;
-  const CAB_HEIGHT = 80;
+  const CABINET = { x: -96, y: -62, w: 192, d: 44, r: 3 };
+  const CAB_BASE_Z = TABLE_TOP_Z + TABLE_SLAB_H;
+  const CAB_HEIGHT = 76;
 
-  const P = k.fitProjection(
-    [...k.boxCorners(TABLE, 0, TABLE_TOP_Z + TABLE_SLAB_H), ...k.boxCorners(CABINET, CAB_BASE_Z, CAB_BASE_Z + CAB_HEIGHT + 10)],
-    width,
-    height,
-    { pad: 35, azimuth: 48, elevation: 30 }
-  );
+  function buildView(viewMode) {
+    const P = k.fitProjection(
+      [...k.boxCorners(TABLE, 0, TABLE_TOP_Z + TABLE_SLAB_H), ...k.boxCorners(CABINET, CAB_BASE_Z, CAB_BASE_Z + CAB_HEIGHT + 12)],
+      width,
+      height,
+      {
+        pad: 35,
+        azimuth: viewMode === '2d' ? 0 : 48,
+        elevation: viewMode === '2d' ? 88 : 30,
+        mode: viewMode,
+        palette
+      }
+    );
 
-  const at = (point) => k.iso(point, P);
-  const S = (paths, style) => k.solidSvg(paths, style);
-  const L = (d, style) => k.lineSvg(d, style);
-  const D = (points, style) => k.dotsSvg(points, style);
-  const byDepth = (points) => [...points].sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P));
+    const at = (point) => k.iso(point, P);
+    const S = (paths, style) => k.solidSvg(paths, { palette, ...style });
+    const L = (d, style) => k.lineSvg(d, { palette, ...style });
+    const D = (points, style) => k.dotsSvg(points, style);
+    const byDepth = (points) => [...points].sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P));
 
-  function tableLegs() {
-    const out = [];
-    const corners = k.corners(TABLE, 18);
-    // Ordenar patas por profundidad
-    for (const [lx, ly] of byDepth(corners)) {
-      // Base / pie de la pata
-      out.push(S(k.cylinder(lx, ly, 6.5, 0, 3, P, 24), { tone: "lo" }));
-      out.push(S(k.cylinder(lx, ly, 5.5, 3, 2, P, 24), { tone: "mid" }));
-      // Fuste inferior
-      out.push(S(k.cylinder(lx, ly, 4.2, 5, 20, P, 24), { tone: "mid" }));
-      // Moldura central torneada
-      out.push(S(k.cylinder(lx, ly, 6, 25, 4, P, 24), { tone: "hi" }));
-      // Fuste superior
-      out.push(S(k.cylinder(lx, ly, 4.8, 29, 38, P, 24), { tone: "mid" }));
-      // Capitel de unión bajo la mesa
-      out.push(S(k.cylinder(lx, ly, 6.5, 67, 3, P, 24), { tone: "lo" }));
+    function tableLegs() {
+      const out = [];
+      const corners = k.corners(TABLE, 18);
+      for (const [lx, ly] of byDepth(corners)) {
+        out.push(S(k.cylinder(lx, ly, 6.5, 0, 3, P, 24), { tone: "lo", color: "brass" }));
+        out.push(S(k.cylinder(lx, ly, 5.5, 3, 2, P, 24), { tone: "mid", color: "wood" }));
+        out.push(S(k.cylinder(lx, ly, 4.2, 5, 20, P, 24), { tone: "mid", color: "wood" }));
+        out.push(S(k.cylinder(lx, ly, 6, 25, 4, P, 24), { tone: "hi", color: "brass" }));
+        out.push(S(k.cylinder(lx, ly, 4.8, 29, 38, P, 24), { tone: "mid", color: "wood" }));
+        out.push(S(k.cylinder(lx, ly, 6.5, 67, 3, P, 24), { tone: "lo", color: "wood" }));
+      }
+
+      const stretcherZ = 16;
+      out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + 18, w: TABLE.w - 36, d: 4, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo", color: "wood" }));
+      out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + TABLE.d - 22, w: TABLE.w - 36, d: 4, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo", color: "wood" }));
+      out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + 18, w: 4, d: TABLE.d - 36, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo", color: "wood" }));
+      out.push(S(k.slabOf({ x: TABLE.x + TABLE.w - 22, y: TABLE.y + 18, w: 4, d: TABLE.d - 36, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo", color: "wood" }));
+
+      return `<g class="iso-base-plate" data-layer="base">${out.join("")}</g>`;
     }
 
-    // Travesaños / bastidor entre patas
-    const stretcherZ = 16;
-    out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + 18, w: TABLE.w - 36, d: 4, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + TABLE.d - 22, w: TABLE.w - 36, d: 4, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: TABLE.x + 18, y: TABLE.y + 18, w: 4, d: TABLE.d - 36, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: TABLE.x + TABLE.w - 22, y: TABLE.y + 18, w: 4, d: TABLE.d - 36, r: 1 }, stretcherZ, 4, P, 3), { tone: "lo" }));
+    function tableTop() {
+      const out = [];
+      const topZ = TABLE_TOP_Z + TABLE_SLAB_H;
+      out.push(S(k.slabOf(TABLE, TABLE_TOP_Z, TABLE_SLAB_H, P, 8, 1.8), { tone: "mid", color: "wood" }));
+      out.push(L(k.planOutline(k.insetPlan(TABLE, 6), topZ, P, 8), { tone: "lo" }));
 
-    return out.join("");
-  }
+      // 1. Regla milimetrada de latón embutida a la izquierda del borde frontal
+      const frontEdgeY = TABLE.y + TABLE.d - 16;
+      const rulerStrip = { x: TABLE.x + 18, y: frontEdgeY, w: 118, d: 8, r: 1.2 };
+      out.push(S(k.slabOf(rulerStrip, topZ, 0.8, P, 2), { tone: "lo", crease: "none", color: "brass" }));
+      const ticks = k.topTicks(rulerStrip.x + 4, rulerStrip.x + rulerStrip.w - 4, 3, 5, rulerStrip.y + 0.8, topZ + 0.8, [2.2, 4.2], P);
+      out.push(L(ticks.minor, { tone: "lo" }), L(ticks.major, { tone: "hi" }));
 
-  function tableTop() {
-    const out = [];
-    // Tablero principal con bisel
-    out.push(S(k.slabOf(TABLE, TABLE_TOP_Z, TABLE_SLAB_H, P, 8, 1.8), { tone: "mid" }));
-    // Ranura decorativa de perímetro
-    out.push(L(k.planOutline(k.insetPlan(TABLE, 6), TABLE_TOP_Z + TABLE_SLAB_H, P, 8), { tone: "lo" }));
-    
-    // Regla graduada de medición en el borde frontal del escritorio
-    const frontEdgeY = TABLE.y + TABLE.d - 12;
-    const rulerStrip = { x: TABLE.x + 20, y: frontEdgeY, w: 120, d: 8, r: 1 };
-    out.push(S(k.slabOf(rulerStrip, TABLE_TOP_Z + TABLE_SLAB_H, 0.6, P, 2), { tone: "lo", crease: "none" }));
-    const ticks = k.topTicks(rulerStrip.x + 4, rulerStrip.x + rulerStrip.w - 4, 3, 5, rulerStrip.y + 0.6, TABLE_TOP_Z + TABLE_SLAB_H + 0.6, [2, 4], P);
-    out.push(L(ticks.minor, { tone: "lo" }), L(ticks.major, { tone: "mid" }));
+      // 2. Bandeja clasificadora de sobres a la derecha del borde frontal (sin chocar con la regla)
+      const tray = { x: TABLE.x + 148, y: frontEdgeY - 4, w: 86, d: 14, r: 2 };
+      out.push(S(k.slabOf(tray, topZ, 2.2, P, 3, 0.4), { tone: "mid", color: "copper" }));
+      // Dos sobres apilados limpiamente dentro de la bandeja
+      for (let i = 0; i < 2; i++) {
+        const env = { x: tray.x + 6 + i * 38, y: tray.y + 2, w: 32, d: 10, r: 1 };
+        out.push(S(k.slabOf(env, topZ + 2.2, 1.4, P, 2), { tone: "hi", color: "chassis" }));
+        out.push(L(k.lineOnTop([env.x + 4, env.y + 4], [env.x + env.w - 6, env.y + 4], topZ + 3.6, P), { tone: "faint", free: true }));
+      }
 
-    // Guía metálica frontal para clasificar
-    out.push(S(k.slabOf({ x: TABLE.x + 16, y: frontEdgeY - 2, w: 180, d: 14, r: 2 }, TABLE_TOP_Z + TABLE_SLAB_H, 4, P, 4), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: TABLE.x + 18, y: frontEdgeY, w: 176, d: 10, r: 1 }, TABLE_TOP_Z + TABLE_SLAB_H + 2, 2, P, 3), { tone: "mid" }));
+      return `<g data-layer="main">${out.join("")}</g>`;
+    }
 
-    // Carta/sobre en la bandeja frontal
-    const letterFront = { x: TABLE.x + 140, y: frontEdgeY + 1, w: 32, d: 20, r: 1 };
-    out.push(S(k.slabOf(letterFront, TABLE_TOP_Z + TABLE_SLAB_H + 4, 1.2, P, 2), { tone: "hi" }));
-    out.push(L(k.planOutline(k.insetPlan(letterFront, 2), TABLE_TOP_Z + TABLE_SLAB_H + 5.2, P, 2), { tone: "faint" }));
-    out.push(L(k.lineOnTop([letterFront.x + 6, letterFront.y + 6], [letterFront.x + 24, letterFront.y + 6], TABLE_TOP_Z + TABLE_SLAB_H + 5.2, P), { tone: "faint", free: true }));
-    out.push(L(k.lineOnTop([letterFront.x + 6, letterFront.y + 11], [letterFront.x + 20, letterFront.y + 11], TABLE_TOP_Z + TABLE_SLAB_H + 5.2, P), { tone: "faint", free: true }));
+    function cabinet() {
+      const out = [];
+      const z0 = CAB_BASE_Z;
+      const h = CAB_HEIGHT;
+      const wallT = 3.2;
+      const shelfH = 3.2;
+      const cols = 4;
+      const innerW = CABINET.w - wallT * (cols + 1);
+      const bayW = innerW / cols;
+      const rowH = (h - shelfH * 3) / 2;
+      const frontY = CABINET.y + CABINET.d;
 
-    return out.join("");
-  }
+      // 1. Pared trasera del gabinete (al fondo)
+      const backWall = { x: CABINET.x, y: CABINET.y, w: CABINET.w, d: 4, r: 1.5 };
+      out.push(S(k.slabOf(backWall, z0, h, P, 4, 0.6), { tone: "lo", color: "copper" }));
 
-  function cabinet() {
-    const out = [];
-    const z0 = CAB_BASE_Z + TABLE_SLAB_H;
-    const h = CAB_HEIGHT;
+      // Función auxiliar para construir una fila de casilleros de atrás hacia adelante
+      // Con Azimuth ~48°, los elementos con menor (x + y) están más lejos y mayor (x + y) más cerca
+      function renderShelfRow(rowZ, rowIndex) {
+        // Piso de la repisa
+        const shelfPlan = { x: CABINET.x, y: CABINET.y, w: CABINET.w, d: CABINET.d, r: 2 };
+        out.push(S(k.slabOf(shelfPlan, rowZ, shelfH, P, 4, 0.5), { tone: "mid", color: "wood" }));
 
-    // Cuerpo del casillero
-    out.push(S(k.slabOf(CABINET, z0, h, P, 6, 1.5), { tone: "mid" }));
-    // Cornisa superior moldurada
-    const crown = { x: CABINET.x - 3, y: CABINET.y - 3, w: CABINET.w + 6, d: CABINET.d + 6, r: 4 };
-    out.push(S(k.slabOf(crown, z0 + h, 5, P, 6, 1.2), { tone: "hi" }));
-    out.push(L(k.planOutline(k.insetPlan(crown, 4), z0 + h + 5, P, 6), { tone: "faint" }));
+        const cellZ = rowZ + shelfH;
+        // Ordenamos las columnas de izquierda a derecha (de más lejana en X a más cercana en X)
+        for (let c = 0; c <= cols; c++) {
+          const wallX = CABINET.x + c * (bayW + wallT);
+          const divider = { x: wallX, y: CABINET.y + 3, w: wallT, d: CABINET.d - 3.5, r: 0.8 };
+          out.push(S(k.slabOf(divider, cellZ, rowH, P, 2, 0.3), { tone: "mid", color: "wood" }));
 
-    // División de casilleros (4 columnas x 2 filas)
-    const cols = 4;
-    const rows = 2;
-    const colW = (CABINET.w - 12) / cols;
-    const rowH = (h - 14) / rows;
+          // Si hay un casillero a la derecha de este tabique, dibujamos sus sobres adentro antes del siguiente tabique frontal
+          if (c < cols) {
+            const slotX = wallX + wallT;
+            // Plaquita portaetiqueta de latón en el canto frontal de la repisa
+            const tag = { x: slotX + bayW / 2 - 7, y: frontY - 0.8, w: 14, d: 1.6, r: 0.5 };
+            out.push(S(k.slabOf(tag, rowZ + 0.5, 2.2, P, 2), { tone: "hi", color: "brass" }));
+            out.push(D([at([tag.x + 2, tag.y + tag.d, rowZ + 1.6]), at([tag.x + tag.w - 2, tag.y + tag.d, rowZ + 1.6])], { size: 0.32, tone: "lo" }));
 
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) {
-        const slotX = CABINET.x + 6 + c * colW;
-        const slotZ = z0 + 6 + r * rowH;
-        const frontY = CABINET.y + CABINET.d;
-
-        // Borde exterior del nicho
-        const niche = { x: slotX + 1, y: CABINET.y + 4, w: colW - 2, d: CABINET.d - 4, r: 1 };
-        out.push(S(k.slabOf(niche, slotZ, rowH - 2, P, 2), { tone: "lo" }));
-
-        // Plaquita portaetiqueta metálica
-        const tag = { x: slotX + colW / 2 - 8, y: frontY - 1, w: 16, d: 2, r: 0.6 };
-        out.push(S(k.slabOf(tag, slotZ - 2, 3, P, 2), { tone: "hi" }));
-        out.push(D([at([tag.x + 2, tag.y + tag.d, slotZ - 0.5]), at([tag.x + tag.w - 2, tag.y + tag.d, slotZ - 0.5])], { size: 0.35, tone: "lo" }));
-
-        // Sobres apilados dentro de algunos casilleros
-        if ((c + r) % 2 === 1 || c === 0) {
-          const letter = { x: slotX + 4, y: CABINET.y + 12, w: colW - 8, d: 24, r: 0.8 };
-          out.push(S(k.slabOf(letter, slotZ + 1, 1.4, P, 2), { tone: "hi" }));
-          out.push(L(k.lineOnTop([letter.x + 4, letter.y + 6], [letter.x + letter.w - 6, letter.y + 6], slotZ + 2.4, P), { tone: "faint", free: true }));
+            // Sobres reales descansando en el piso interior del casillero hueco
+            if ((c + rowIndex) % 2 === 0 || c === 1) {
+              const stackCount = c === 1 ? 2 : 1;
+              for (let s = 0; s < stackCount; s++) {
+                const letter = {
+                  x: slotX + 4 + s * 1.5,
+                  y: CABINET.y + 8 + s * 2,
+                  w: bayW - 8,
+                  d: CABINET.d - 12,
+                  r: 0.8
+                };
+                const lz = cellZ + s * 1.8;
+                out.push(S(k.slabOf(letter, lz, 1.5, P, 2), { tone: "hi", color: "chassis" }));
+                out.push(L(k.planOutline(k.insetPlan(letter, 2), lz + 1.5, P, 2), { tone: "faint" }));
+                out.push(L(k.lineOnTop([letter.x + 5, letter.y + 8], [letter.x + letter.w - 7, letter.y + 8], lz + 1.55, P), { tone: "lo", free: true }));
+              }
+            }
+          }
         }
       }
+
+      // Fila inferior de casilleros
+      renderShelfRow(z0, 0);
+      // Fila superior de casilleros
+      renderShelfRow(z0 + shelfH + rowH, 1);
+
+      // Techo del gabinete y cornisa moldurada superior
+      const topShelfZ = z0 + (shelfH + rowH) * 2;
+      out.push(S(k.slabOf({ x: CABINET.x, y: CABINET.y, w: CABINET.w, d: CABINET.d, r: 2 }, topShelfZ, shelfH, P, 4, 0.5), { tone: "mid", color: "wood" }));
+      const crown = { x: CABINET.x - 3, y: CABINET.y - 2.5, w: CABINET.w + 6, d: CABINET.d + 5, r: 3.5 };
+      out.push(S(k.slabOf(crown, topShelfZ + shelfH, 5, P, 6, 1.2), { tone: "hi", color: "copper" }));
+      out.push(L(k.planOutline(k.insetPlan(crown, 3.5), topShelfZ + shelfH + 5, P, 6), { tone: "faint" }));
+
+      return `<g data-layer="main">${out.join("")}</g>`;
     }
 
-    return out.join("");
+    function postalScale() {
+      const out = [];
+      const sx = -18;
+      const sy = 14;
+      const scaleBase = { x: sx - 20, y: sy - 14, w: 40, d: 28, r: 3 };
+      const z0 = TABLE_TOP_Z + TABLE_SLAB_H;
+
+      // Base pesada de hierro/cobre de la balanza
+      out.push(S(k.slabOf(scaleBase, z0, 7, P, 4, 0.8), { tone: "mid", color: "copper" }));
+
+      // Pomo moleteado de calibración a la derecha
+      out.push(S(k.cylinder(sx + 12, sy + 4, 3.6, z0 + 7, 5, P, 20), { tone: "mid", color: "accent" }));
+      out.push(L(k.knurl(sx + 12, sy + 4, 3.6, z0 + 7, z0 + 12, 12, P), { tone: "lo" }));
+
+      // Torre central y carátula circular del dial (a la derecha/frente)
+      out.push(S(k.cylinder(sx, sy, 6.5, z0 + 7, 12, P, 24, 0.5), { tone: "lo", color: "brass" }));
+      const dialZ = z0 + 19;
+      out.push(S(k.cylinder(sx, sy, 11.5, dialZ, 4.5, P, 28, 0.8), { tone: "hi", color: "chassis" }));
+      const ticks = k.radialTicks(sx, sy, 9.6, 24, 4, dialZ + 4.5, [1.2, 2.2], P);
+      out.push(L(ticks.minor, { tone: "lo" }));
+      out.push(L(ticks.major, { tone: "mid" }));
+      out.push(L(k.lineOnTop([sx, sy], [sx + 5, sy + 2], dialZ + 4.6, P), { tone: "red" }));
+      out.push(D([at([sx, sy, dialZ + 4.7])], { size: 0.75, tone: "hi" }));
+
+      // Vástago y plato de latón de pesaje ELEVADO por encima del dial para que nunca lo tape
+      const panX = sx - 11;
+      const panY = sy - 4;
+      out.push(S(k.cylinder(panX, panY, 2.0, z0 + 7, 20, P, 16), { tone: "lo", color: "brass" }));
+      out.push(S(k.cylinder(panX, panY, 9.5, z0 + 27, 2.2, P, 28, 0.6), { tone: "hi", color: "gold" }));
+      out.push(L(k.ring(panX, panY, 7.2, z0 + 29.2, P, 24), { tone: "lo" }));
+
+      return `<g data-layer="detail">${out.join("")}</g>`;
+    }
+
+    const halo = `<path class="iso-halo" d="${k.haloOf(TABLE, -10, TABLE_SLAB_H, P)}"/>`;
+    return [halo, tableLegs(), tableTop(), cabinet(), postalScale()].join('\n    ');
   }
 
-  function postalScale() {
-    const out = [];
-    // Balanza mecánica de correos colocada en el centro del escritorio
-    const scaleBase = { x: -20, y: -5, w: 40, d: 30, r: 3 };
-    const z0 = TABLE_TOP_Z + TABLE_SLAB_H;
-
-    // Base de la balanza
-    out.push(S(k.slabOf(scaleBase, z0, 8, P, 4, 0.8), { tone: "mid" }));
-
-    // Columna central de la balanza
-    out.push(S(k.cylinder(0, 10, 8, z0 + 8, 14, P, 24, 0.6), { tone: "lo" }));
-
-    // Dial circular de medición
-    const dialZ = z0 + 22;
-    out.push(S(k.cylinder(0, 10, 12, dialZ, 5, P, 28, 0.8), { tone: "hi" }));
-    // Ticks en el dial
-    const ticks = k.radialTicks(0, 10, 10, 24, 4, dialZ + 5, [1.2, 2.4], P);
-    out.push(L(ticks.minor, { tone: "lo" }));
-    out.push(L(ticks.major, { tone: "mid" }));
-    // Aguja indicadora
-    out.push(L(k.lineOnTop([0, 10], [5, 12], dialZ + 5.1, P), { tone: "hi" }));
-    out.push(D([at([0, 10, dialZ + 5.2])], { size: 0.8, tone: "hi" }));
-
-    // Plato de pesaje a la izquierda
-    const panX = -12;
-    const panY = 10;
-    out.push(S(k.cylinder(panX, panY, 1.8, z0 + 8, 10, P, 16), { tone: "lo" }));
-    out.push(S(k.cylinder(panX, panY, 9, z0 + 18, 1.8, P, 24, 0.5), { tone: "hi" }));
-
-    // Pomo moleteado de ajuste
-    out.push(S(k.cylinder(12, 10, 4, z0 + 8, 6, P, 20), { tone: "mid" }));
-    out.push(L(k.knurl(12, 10, 4, z0 + 8, z0 + 14, 12, P), { tone: "lo" }));
-
-    return out.join("");
-  }
-
-  const halo = `<path class="iso-halo" d="${k.haloOf(TABLE, -10, TABLE_SLAB_H, P)}"/>`;
-
-  const body = [
-    `<style>${k.ISO_CSS}</style>`,
-    halo,
-    tableLegs(),
-    tableTop(),
-    cabinet(),
-    postalScale()
-  ];
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg iso" data-theme="${theme}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Postal sorting workstation isometric illustration">
-  ${body.join('\n  ')}
-</svg>`;
+  return k.wrapDualModeSvg({
+    width,
+    height,
+    theme,
+    mode,
+    colorMode,
+    palette,
+    animate,
+    showPlate,
+    label: "Postal sorting workstation illustration (2D & 3D)",
+    view3d: buildView('3d'),
+    view2d: buildView('2d')
+  });
 }

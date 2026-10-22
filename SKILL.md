@@ -1,189 +1,215 @@
 ---
 name: svg-3d-illustrator
-description: Universal skill for AI agents (Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf) to generate crafted, deterministic technical vector illustrations and 3D isometric SVG objects (Anatomy & Linear style) without generative AI image services. Builds physical, highly detailed objects with four-tone shading, 0.6px line weights, and transparent backgrounds for websites and documentation.
+description: Universal AI Agent Skill (Claude Code, Antigravity, Cursor, Codex, OpenCode, Windsurf) to generate deterministic 2D Flat & 3D Volumetric SVG illustrations, organic/botanical shapes (like flowers), and technical objects in Full Color or Monochrome B&W, with embedded 3dsvg-style animations and an Interactive Vector & 3D Studio Editor (Zoom/Pan, 3D Orbit, 2D/3D toggle, Color/Mono toggle, Background-Ready export).
 compatibility: Universal AI Agent Skill (Claude Code, Antigravity, OpenCode, Codex, Cursor, Windsurf, CLI runners). Requires Node.js 18+.
 license: MIT
 ---
 
-# SVG 3D Illustrator (Craft & Anatomy Engine)
+# SVG 3D & 2D Illustrator (V2 — Dual Dimension, Color & Interactive Studio)
 
-A universal skill for autonomous AI agents across platforms (Claude Code, Antigravity, Cursor, OpenCode, Codex, and standalone CLI) to compose and generate **high-craft technical vector illustrations**, physical 3D isometric objects, and clean architectural figures directly as pure, deterministic SVG code — **without relying on diffusion models or external image generation APIs**.
-
-Built upon the geometric architecture of `wheresryan22/anatomy` and the technical design standards of Linear and Stripe.
+A universal skill for autonomous AI agents to design and generate **crafted, deterministic 2D Flat and 3D Volumetric SVG illustrations** — ranging from organic forms (flowers, leaves, crystals, fluid waves) to precision physical machines (vintage computers, server blades, metrology rigs) — **with full 4-tone color palettes or classic black-and-white, embedded animations, and an interactive Studio Editor**.
 
 ---
 
-## ⚠️ Golden Rule: Pure Physical Object vs. Landing Page
+## 🎯 Identity & Golden Rules for Agents
 
 > [!IMPORTANT]
-> **The physical object IS the illustration.**
-> - **NEVER** generate full opaque dark cards that look like a landing page with giant marketing titles, promotional specs tables ("450 HP", "Fox 3.0"), buttons, or fake telemetry widgets.
-> - **ALWAYS** generate the **isolated, real physical machine or instrument** (e.g., retro computer with mechanical keyboard and coiled cord, server blade with hot-swap drive bays, postal sorting desk with scale, dial indicator rig), with a transparent background and a soft ground contact halo (`iso-halo`), so it can be cleanly dropped into **any website, dark or light background, or documentation**, and animated without visual noise.
+> **1. True Visual Identity — Never Build a "Generic Box Board" for Repositories**
+> - When a user asks you to analyze a repository or create a specific illustration (e.g., *"illustrate my project"*, *"make a flower"*, *"create a background illustration"*), **DO NOT** just slap rectangular gray boxes with tiny unreadable text labels onto a flat rectangular slab.
+> - Instead, follow the **3-Step Creative Recon Workflow**:
+>   1. **Metaphor & Form (`organic-kit` + `iso-kit`)**: Choose an iconic, memorable visual metaphor (e.g., a blooming lotus/flower, an interlocking turbine/core, a floating neural crystal, a multi-ring orbital hub, or a physical instrument).
+>   2. **Dimension & Background-Readiness (`2d` vs `3d`, `showPlate`)**: If the user wants an illustration to use as a **website background, hero asset, or icon**, set `showPlate: false` (`--no-plate`) so there is no bulky rectangular tray blocking the background, and provide **both `3d` and `2d` views** via `wrapDualModeSvg`.
+>   3. **Color & Motion (`color` vs `mono`, `animate`)**: Support both **Full Color** (`colorMode: 'color'`) and **Monochrome B&W** (`colorMode: 'mono'`) using semantic `color` tokens on every solid (`petal`, `leaf`, `gold`, `primary`, `secondary`, `accent`, `copper`, `chassis`), and attach a smooth animation (`float`, `bloom`, `spin-float`, `pulse`, `wobble`, `swing`).
+
+> [!IMPORTANT]
+> **2. Always Generate the Interactive Studio HTML (`--preview` / `--studio`)**
+> - Every time you generate an SVG illustration, **always** generate its companion `.html` Interactive Studio (`generateHtmlPreview` or `--preview`), so the user can:
+>   - **Zoom (0.25x–8x)** with the mouse wheel and **Pan** freely across the infinite canvas.
+>   - **Orbit / Tilt in 3D** interactively.
+>   - Toggle live between **3D Volumetric** and **2D Flat Vector**.
+>   - Switch live between **Monochrome B&W** and **Full Color Palettes** (or pick custom colors).
+>   - Toggle **Base Plate On/Off** (`Background-Ready`) and test **8 Animation Presets** before clicking **Download SVG** or **Copy React `<Illustration3D />`**.
 
 ---
 
-## Agent Usage & Commands
+## Agent CLI Usage (`bin/svg-3d.mjs`)
 
-The command-line interface is located at `bin/svg-3d.mjs` (or via `node bin/svg-3d.mjs`):
-
-### 1. Physical Craft Object Illustration (`craft`) — Recommended Mode
-Generates a detailed, tangible physical machine with 4-tone subtle shading, bevels, screws, and 0.6px hairline vector strokes:
+### 1. Generate 2D / 3D Models (Color or B&W, Animated, with Studio)
 
 ```bash
-# 1984 Vintage Desktop Computer (Macintosh 128k style) in light / paper theme
-node bin/svg-3d.mjs craft --model desk-computer --theme light --out ./assets/computer.svg --preview
+# Botanical Bloom Flower in 3D, Full Color, with 'bloom' animation & Interactive Studio
+node bin/svg-3d.mjs craft \
+  --model bloom-flower \
+  --mode 3d \
+  --color-mode color \
+  --palette botanical \
+  --animate bloom \
+  --out ./assets/bloom-flower.svg \
+  --preview
 
-# 1984 Vintage Desktop Computer in dark obsidian theme
-node bin/svg-3d.mjs craft --model desk-computer --theme dark --out ./assets/computer-dark.svg
+# Botanical Bloom Flower in 2D Flat mode, without base plate (Background-Ready)
+node bin/svg-3d.mjs craft \
+  --model bloom-flower \
+  --mode 2d \
+  --color-mode color \
+  --no-plate \
+  --animate float \
+  --out ./assets/bloom-flower-2d.svg \
+  --preview
 
-# 1U Data Center Server Blade with hot-swap bays, RAM DIMMs & fiber optic cable
-node bin/svg-3d.mjs craft --model server-blade --theme light --out ./assets/server-blade.svg --preview
-
-# Postal Sorting Workstation with turned legs, cubbies, letters & scale
-node bin/svg-3d.mjs craft --model sorting-desk --theme light --out ./assets/workstation.svg --preview
-
-# Precision Dial Indicator Metrology Test Rig on surface plate
-node bin/svg-3d.mjs craft --model dial-indicator --theme light --out ./assets/dial-indicator.svg
-```
-
-### 2. Customizing Screen Prompts & Parameters
-For models featuring a display or CRT screen (such as `desk-computer`), pass custom prompt text:
-
-```bash
+# 1984 Vintage Desktop Computer in Warm Craft Color + Float Animation
 node bin/svg-3d.mjs craft \
   --model desk-computer \
-  --theme light \
-  --screen-text "init agent --strict" \
-  --out ./assets/agent-terminal.svg \
+  --color-mode color \
+  --palette warm-craft \
+  --animate float \
+  --screen-text "init studio --v2" \
+  --out ./assets/computer-color.svg \
   --preview
-```
 
-### 3. Declarative Scene Specification (`scene.json`)
-For programmatic compilation or embedding in agent workflows:
+# 1U Data Center Server Blade in Cyber Neon Color (or '--color-mode mono' for B&W)
+node bin/svg-3d.mjs craft \
+  --model server-blade \
+  --color-mode color \
+  --palette cyber-neon \
+  --animate spin-float \
+  --out ./assets/server-blade.svg \
+  --preview
 
-```json
-{
-  "craft": "server-blade",
-  "theme": "light",
-  "params": {}
-}
-```
+# V8 Engine Piston & Crankshaft in 3D Mechanical Color
+node bin/svg-3d.mjs craft \
+  --model engine-piston \
+  --mode 3d \
+  --color-mode color \
+  --palette vibrant \
+  --animate float \
+  --out ./assets/engine-piston.svg \
+  --preview
 
-Compile with:
-```bash
-node bin/svg-3d.mjs render --scene ./scene.json --out ./assets/result.svg --preview
+# Astral Bot — Neo-Brutalist Pop Sticker & 3D Card (2D Sticker or 3D Extruded)
+node bin/svg-3d.mjs craft \
+  --model astral-bot-card \
+  --mode 2d \
+  --color-mode color \
+  --animate float \
+  --out ./assets/astral-bot-card.svg \
+  --preview
+
+# Mission Orbit — Cyber Rocket Pop Sticker & 3D Card (con o sin movimiento)
+node bin/svg-3d.mjs craft \
+  --model rocket-launch-card \
+  --mode 2d \
+  --color-mode color \
+  --animate float \
+  --out ./assets/rocket-launch-card.svg \
+  --preview
+
+# Retro Console — 8-Bit Pixel Gameboy Pop Sticker & 3D Card
+node bin/svg-3d.mjs craft \
+  --model retro-console-card \
+  --mode 2d \
+  --color-mode color \
+  --animate static \
+  --out ./assets/retro-console-card.svg \
+  --preview
+
+# Upgrade ANY existing SVG file into an Interactive Studio Editor
+node bin/svg-3d.mjs studio \
+  --in ./path/to/existing.svg \
+  --out ./path/to/existing-studio.html
 ```
 
 ---
 
-## Four-Tone Shading System (Anatomy Architecture)
+## Built-in Modes, Palettes & Animations
 
-The engine uses analytical flat lighting with zero blurry gradient meshes and zero noisy polygonal facets:
+### Dimension Modes (`--mode`)
+- `3d`: Analytical isometric / volumetric 3D projection with 4-tone directional shading, bevels, and depth parallax.
+- `2d`: Clean flat orthographic/top-down vector illustration ideal for icons, flat diagrams, and subtle web backgrounds.
+- **Dual-Mode SVG**: Models built with `wrapDualModeSvg` embed both `.iso-view-3d` and `.iso-view-2d` so the user can switch between **2D** and **3D** with a single click inside the Studio HTML!
 
-| Token / CSS Class | Semantic Role | Light Theme (`light`) | Dark Theme (`dark`) |
-| :--- | :--- | :--- | :--- |
-| `iso-top` | Horizontal top face receiving direct ambient light | `#ffffff` | `#1c1c1c` |
-| `iso-shade-0` | Lateral face in deepest shadow | `#dcdcd9` | `#0f0f0f` |
-| `iso-shade-1` | Lateral face in medium shadow | `#e5e5e2` | `#121212` |
-| `iso-shade-2` | Lateral face in half-light | `#ededea` | `#151515` |
-| `iso-shade-3` | Lateral face in brightest light | `#f4f4f1` | `#181818` |
-| `iso-line` (`hi`) | Primary silhouette outlines and prominent edges | `#26262a` (0.6px) | `#d4d4d4` |
-| `iso-line` (`mid`) | Visible body edges and facet intersections | `#8a8a8f` | `#6a6a6a` |
-| `iso-line` (`lo`) | Secondary details, grooves, and panel seams | `#b4b4b8` | `#3e3e3e` |
-| `iso-line` (`faint`) | Internal bevels and subtle material creases | `#d4d4d6` | `#2a2a2a` |
-| `iso-halo` | Soft Gaussian ground contact shadow under base | `opacity: 0.32` (`blur(9px)`) | `opacity: 0.9` |
+### Color Modes (`--color-mode`) & Material Palettes (`--palette`)
+- `color`: Full analytical 4-tone color shading (`--c-top`, `--c-s0..3`, `--c-edge`) computed automatically for every part.
+- `mono`: Classic high-craft black-and-white technical illustration (`light` paper or `dark` obsidian).
+- **Built-in Palettes**:
+  - `botanical`: Rose/coral petals (`#fb7185`, `#e11d48`), emerald foliage (`#10b981`), golden stamens (`#fbbf24`).
+  - `vibrant`: Indigo (`#6366f1`), sky cyan (`#0ea5e9`), rose accent (`#f43f5e`).
+  - `cyber-neon`: Electric cyan (`#06b6d4`), violet (`#8b5cf6`), neon emerald (`#10b981`).
+  - `warm-craft`: Terracotta/amber (`#d97706`), brass (`#eab308`), warm cream & crimson (`#dc2626`).
+  - `blueprint`: Engineering cobalt (`#3b82f6`), ice blue (`#60a5fa`), gold markers (`#facc15`).
+  - `gold-onyx`: Pure gold (`#eab308`, `#fef08a`) over dark zinc/onyx (`#27272a`).
 
----
-
-## Physical Craft Model Catalog (`craft`)
-
-### 1. `desk-computer`
-- **Inspiration**: 1984 all-in-one desktop computer (Macintosh 128k).
-- **Anatomy**:
-  - Surface plate with feet, screws, and brass label plate.
-  - Plinth base and main chassis with rear handle, ventilation slots, and side rocker power switch.
-  - Recessed CRT display with phosphor glow, raster scanlines, and customizable monospace prompt text.
-  - Floppy disk drive slot with activity LED and speaker grille.
-  - Coiled helical keyboard cord routing to a 58-key mechanical keyboard with individual keycap dishes.
-
-### 2. `server-blade`
-- **Inspiration**: 1U enterprise data center server blade.
-- **Anatomy**:
-  - Metal chassis with side telescopic sliding rails and locking slots.
-  - 4x hot-swap hard drive bays with release levers, ventilation holes, and dual-color activity LEDs.
-  - Green motherboard PCB with mounting standoffs and grounding rings.
-  - Heavy CPU copper heatsink block topped with 13 dense aluminum cooling fins and socket spring screws.
-  - Dual memory banks with 8 total RAM DIMMs, DRAM chips, and retention latches.
-  - Solid-state VRM capacitor bank.
-  - Rear dual SFP+ optical cage with connected transceiver, pull tab, and angled fiber optic patch cord.
-
-### 3. `sorting-desk`
-- **Inspiration**: Vintage postal mail sorting workstation.
-- **Anatomy**:
-  - Sturdy wooden bench table with turned legs, base flanges, moldings, and cross stretchers.
-  - Front tabletop sorting trough with envelope stack and millimetric ruler markings (`topTicks`).
-  - Overhead 8-bay sorting cubbies cabinet with crown molding and metal label plates.
-  - Mechanical postal scale with circular dial, pointer needle, knurled adjustment knob, and brass pan.
-
-### 4. `dial-indicator`
-- **Inspiration**: Metrology surface plate and gauge rig.
-- **Anatomy**:
-  - Heavy cast iron surface plate with mounting feet and engraved ruler strip.
-  - Magnetic base with clamping post, articulated arm, and knurled lock thumb screws.
-  - Circular dial gauge with high-precision radial graduations and needle.
-  - Dual guide rails with end stops and sliding carriage carrying step gauge blocks.
-  - Hardened steel contact plunger.
+### Animation Presets (`--animate`)
+All animations are embedded as pure CSS `@keyframes` inside the `<svg>` so they work standalone anywhere:
+- `static` | `float` | `spin` | `pulse` | `wobble` | `swing` | `spin-float` | `bloom`
 
 ---
 
-## Building a New Custom Physical Model
+## Building Custom Organic or Technical Illustrations (2D + 3D + Color)
 
-When designing a new physical object from scratch, follow the `iso-kit` conventions:
+When creating a bespoke illustration for a user (e.g., a custom flower, crystal, project identity, or machine), combine `iso-kit.mjs` and `organic-kit.mjs` with `wrapDualModeSvg`:
 
 ```javascript
-import * as k from '../engine/iso-kit.mjs';
+import * as k from './src/engine/iso-kit.mjs';
+import * as org from './src/engine/organic-kit.mjs';
+import { generateHtmlPreview } from './src/utils/preview-generator.js';
+import fs from 'node:fs';
 
-export function renderCustomInstrument({ width = 600, height = 400, theme = 'light' }) {
-  // 1. Define bounding geometry in real-world units (x, y on floor, z up)
-  const BASE = { x: -60, y: -40, w: 120, d: 80, r: 4 };
-  const BASE_H = 8;
+export function renderCustomIllustration({
+  width = 640,
+  height = 500,
+  theme = 'light',
+  mode = '3d',
+  colorMode = 'color',
+  palette = 'botanical',
+  animate = 'float',
+  showPlate = false // false = Background-Ready (no rectangular tray)
+} = {}) {
+  function buildView(viewMode) {
+    const BOUND = { x: -90, y: -90, w: 180, d: 180, r: 20 };
+    const P = k.fitProjection(
+      [...k.boxCorners(BOUND, -10, 120)],
+      width,
+      height,
+      {
+        pad: 32,
+        azimuth: viewMode === '2d' ? 0 : 48,
+        elevation: viewMode === '2d' ? 88 : 32,
+        mode: viewMode,
+        palette
+      }
+    );
 
-  // 2. Compute camera projection (azimuth 42°-56°, elevation 30°)
-  const P = k.fitProjection(
-    [...k.boxCorners(BASE, 0, BASE_H + 40)],
-    width,
-    height,
-    { pad: 30, azimuth: 48, elevation: 30 }
-  );
+    const out = [];
 
-  const S = (paths, style) => k.solidSvg(paths, style);
-  const L = (d, style) => k.lineSvg(d, style);
-  const D = (points, style) => k.dotsSvg(points, style);
-  const at = (point) => k.iso(point, P);
+    // 1. Optional base plate wrapped in .iso-base-plate so user can toggle it in Studio
+    out.push(`<g class="iso-base-plate" data-layer="base">
+      <path class="iso-halo" d="${k.haloOf({ x: -55, y: -55, w: 110, d: 110, r: 55 }, -8, 6, P)}"/>
+      ${k.solidSvg(k.cylinder(0, 0, 44, -6, 6, P, 48, 1), { color: 'panel', palette })}
+    </g>`);
 
-  // 3. Assemble components from back to front, bottom to top
-  const out = [];
+    // 2. Organic petal/leaf ring or custom 3D/2D solids with semantic colors
+    out.push(org.renderPetalRing({
+      cx: 0, cy: 0, z: 30,
+      count: 8, length: 50, width: 22, tiltDeg: viewMode === '2d' ? 10 : 25, curl: 6,
+      P, color: 'petal', palette, layer: 'main'
+    }));
 
-  // Ground halo contact shadow
-  out.push(`<path class="iso-halo" d="${k.haloOf(BASE, -4, 4, P)}"/>`);
+    // 3. Central core in 'detail' layer (gets automatic parallax in animations)
+    out.push(k.solidSvg(k.cylinder(0, 0, 12, 36, 8, P, 32, 1.2), {
+      color: 'gold',
+      palette,
+      layer: 'detail'
+    }));
 
-  // Base slab with 1.2px bevel
-  out.push(S(k.slabOf(BASE, 0, BASE_H, P, 6, 1.2), { tone: "mid" }));
+    return out.join('\n    ');
+  }
 
-  // Perimeter groove and corner screws
-  out.push(L(k.planOutline(k.insetPlan(BASE, 4), BASE_H, P, 6), { tone: "lo" }));
-  const screws = k.corners(BASE, 7);
-  out.push(L(screws.map(([x, y]) => k.ring(x, y, 1.8, BASE_H, P, 16)).join(""), { tone: "lo" }));
-  out.push(D(screws.map(([x, y]) => at([x, y, BASE_H])), { size: 0.45 }));
-
-  // Turned cylinder knob with knurling
-  out.push(S(k.cylinder(0, 0, 14, BASE_H, 12, P, 32, 0.8), { tone: "hi" }));
-  out.push(L(k.knurl(0, 0, 14, BASE_H + 2, BASE_H + 12, 36, P), { tone: "lo" }));
-
-  // 4. Return standalone SVG with embedded ISO_CSS styles
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg iso" data-theme="${theme}" viewBox="0 0 ${width} ${height}">
-    <style>${k.ISO_CSS}</style>
-    ${out.join('\n    ')}
-  </svg>`;
+  return k.wrapDualModeSvg({
+    width, height, theme, mode, colorMode, palette, animate, showPlate,
+    label: 'Custom 2D/3D Illustration',
+    view3d: buildView('3d'),
+    view2d: buildView('2d')
+  });
 }
 ```

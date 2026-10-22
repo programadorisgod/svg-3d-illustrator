@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio: Retro Play Console — 8-Bit Pop Sticker & 3D Card — svg-3d-illustrator</title>
+  <style>
+    :root {
+      --bg-app: #080a0f;
+      --bg-panel: #0d111a;
+      --bg-card: #131824;
+      --bg-hover: #1c2436;
+      --bg-active: #232c42;
+      --border: #1f273a;
+      --border-subtle: #161c2b;
+      --border-hover: #2e3b56;
+      --border-focus: #6366f1;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #4f46e5;
+      --accent-hover: #6366f1;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --emerald: #10b981;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-app);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Header */
+    header {
+      height: 58px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 0.04em;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+    }
+    .brand h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .badge {
+      background: var(--accent-light);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-emerald {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-primary {
+      background: #4f46e5;
+      border-color: #4f46e5;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+      border-color: #4338ca;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Infinite Viewport */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease;
+    }
+    .viewport:active {
+      cursor: grabbing;
+    }
+    .viewport[data-backdrop="dark-grid"] {
+      background-color: #080a0f;
+      background-image: radial-gradient(#182030 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .viewport[data-backdrop="light-paper"] {
+      background-color: #f6f6f3;
+      background-image: radial-gradient(#d6d6d0 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .viewport[data-backdrop="checker"] {
+      background-color: #141720;
+      background-image:
+        linear-gradient(45deg, #1c2230 25%, transparent 25%),
+        linear-gradient(-45deg, #1c2230 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1c2230 75%),
+        linear-gradient(-45deg, transparent 75%, #1c2230 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+    .viewport[data-backdrop="aurora"] {
+      background: radial-gradient(circle at 20% 20%, #151833 0%, #080a0f 60%, #062b24 100%);
+    }
+
+    /* Stage & 3D Orbit Container */
+    .stage-pan-zoom {
+      width: 82%;
+      height: 82%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      will-change: transform;
+      perspective: 1400px;
+    }
+    .stage-3d-orbit {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transition: transform 0.05s linear;
+    }
+    .stage-3d-orbit svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      overflow: visible;
+      filter: drop-shadow(0 16px 36px rgba(0,0,0,0.3));
+    }
+
+    /* Floating Bottom Zoom & Camera Dock */
+    .floating-dock {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 17, 26, 0.92);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+      z-index: 10;
+    }
+    .dock-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .dock-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+    .dock-btn.active {
+      background: var(--accent-light);
+      color: #c7d2fe;
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .zoom-readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 48px;
+      text-align: center;
+    }
+    .dock-sep {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      margin: 0 3px;
+    }
+
+    /* Top-left HUD Pills */
+    .viewport-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-pill {
+      background: rgba(13, 17, 26, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+    .hud-pill strong {
+      color: var(--text);
+    }
+
+    /* Right Studio Sidebar */
+    .sidebar {
+      width: 348px;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    /* Segmented Control */
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-app);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      gap: 3px;
+    }
+    .segmented button {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .segmented button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .segmented button.active {
+      background: var(--bg-card);
+      color: #fff;
+      font-weight: 600;
+      border: 1px solid var(--border-hover);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Grid Buttons (Animations & Palettes) */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+    .preset-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      height: 35px;
+      padding: 0 11px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.14s ease;
+      text-align: left;
+    }
+    .preset-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .preset-btn.active {
+      background: var(--accent-light);
+      border-color: rgba(99, 102, 241, 0.45);
+      color: #fff;
+      font-weight: 600;
+    }
+    .swatch-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Sliders & Rows */
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      height: 28px;
+    }
+    .control-row span {
+      font-weight: 500;
+    }
+    .control-row input[type="range"] {
+      flex: 1;
+      height: 5px;
+      accent-color: #6366f1;
+      cursor: pointer;
+      background: var(--bg-app);
+      border-radius: 3px;
+    }
+    .control-row .val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text);
+      min-width: 38px;
+      text-align: right;
+    }
+    .color-pickers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .color-picker-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 35px;
+      padding: 0 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .color-picker-item:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .color-picker-item input[type="color"] {
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 368px;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 600;
+      font-size: 12.5px;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: all 0.18s ease;
+      z-index: 100;
+    }
+    .color-picker-item input[type="color"] {
+      width: 16px;
+      height: 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 3px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 340px;
+      background: #10b981;
+      color: #052e16;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: all 0.18s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">3D</div>
+      <h1>Retro Play Console — 8-Bit Pop Sticker & 3D Card</h1>
+      <span class="badge" id="badge-mode">3D Isometric</span>
+      <span class="badge badge-emerald" id="badge-color">Color / Mono</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="copyReactComponent()">Copy React &lt;SVG3D /&gt;</button>
+      <button class="btn" onclick="copySvg()">Copy SVG</button>
+      <button class="btn btn-primary" onclick="downloadSvg()">⬇ Download SVG</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- Lienzo Infinito con Zoom, Pan y Órbita 3D -->
+    <main class="viewport" id="viewport" data-backdrop="dark-grid">
+      <div class="viewport-hud">
+        <div class="hud-pill">Mode: <strong id="hud-mode">3D</strong></div>
+        <div class="hud-pill">Color: <strong id="hud-color">Mono</strong></div>
+        <div class="hud-pill">Anim: <strong id="hud-anim">Static</strong></div>
+        <div class="hud-pill">Scroll = <strong>Zoom</strong> · Drag = <strong id="hud-drag">Pan / Orbit</strong></div>
+      </div>
+
+      <div class="stage-pan-zoom" id="stage-pan-zoom">
+        <div class="stage-3d-orbit" id="stage-3d-orbit">
+          <svg xmlns="http://www.w3.org/2000/svg" class="iso-svg iso" data-theme="light" data-mode="2d" data-color-mode="color" data-palette="vibrant" data-animate="float" data-plate="visible" style="--pal-primary:#6366f1;--pal-secondary:#0ea5e9;--pal-accent:#f43f5e;--pal-petal:#fb7185;--pal-petal-deep:#e11d48;--pal-leaf:#10b981;--pal-stem:#059669;--pal-gold:#f59e0b;--pal-copper:#d97706;--pal-chassis:#e2e8f0;--pal-panel:#cbd5e1;--pal-pcb:#10b981;--pal-wood:#d97706;--pal-brass:#eab308;--pal-cobalt:#3b82f6;--pal-violet:#8b5cf6;--pal-cyan:#06b6d4;--pal-emerald:#10b981;--pal-rose:#f43f5e;--pal-amber:#f59e0b;--pal-slate:#64748b;" viewBox="0 0 620 560" role="img" aria-label="Retro Console Pop-Sticker and 3D Card Illustration">
+  <style>
+.iso{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#ffffff;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso[data-theme="dark"]{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#ffffff;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-fill{fill:var(--c-s1,var(--anatomy-paper))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-top{fill:var(--c-top,var(--anatomy-top))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="0"]{fill:var(--c-s0,var(--anatomy-shade-0))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="1"]{fill:var(--c-s1,var(--anatomy-shade-1))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="2"]{fill:var(--c-s2,var(--anatomy-shade-2))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="3"]{fill:var(--c-s3,var(--anatomy-shade-3))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-edge{stroke:var(--c-edge,var(--anatomy-hi))}
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-crease,
+.iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-bevel{stroke:var(--c-crease,var(--anatomy-lo))}
+.iso[data-color-mode="color"] .iso-line[data-color-stroke]{stroke:var(--c-stroke,var(--anatomy-hi))}
+.iso[data-color-mode="color"] .iso-flat-shape[data-has-color]{fill:var(--c-top,var(--anatomy-top));stroke:var(--c-edge,var(--anatomy-hi))}
+.iso:not([data-color-mode="color"]) .iso-flat-shape{fill:var(--anatomy-top);stroke:var(--anatomy-hi)}
+.iso-svg[data-mode="2d"] .iso-view-3d{display:none!important}
+.iso-svg:not([data-mode="2d"]) .iso-view-2d{display:none!important}
+.iso-svg[data-plate="hidden"] .iso-base-plate{display:none!important}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-dots[data-tone="green"] circle{fill:var(--anatomy-green);opacity:.95}
+.iso-dots[data-tone="blue"] circle{fill:var(--anatomy-blue);opacity:.95}
+.iso-dots[data-tone="red"] circle{fill:var(--anatomy-red);opacity:.95}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+
+.iso-svg{
+  --anim-speed:1;
+}
+.iso-svg .iso-scene-root,
+.iso-svg [data-layer],
+.iso-svg .iso-halo,
+.iso-svg .iso-petal-ring{
+  transform-box:fill-box;
+  transform-origin:center center;
+}
+
+@keyframes svg3d-float{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-10px)}
+}
+@keyframes svg3d-float-detail{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-14px)}
+}
+@keyframes svg3d-halo-breathe{
+  0%,100%{transform:translateY(3px) scale(1);opacity:var(--anatomy-halo-opacity,.32)}
+  50%{transform:translateY(3px) scale(.92);opacity:calc(var(--anatomy-halo-opacity,.32) * .65)}
+}
+@keyframes svg3d-spin-2d{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+@keyframes svg3d-spin-3d{
+  0%{transform:rotate(0deg) skewX(0deg) scale(1)}
+  25%{transform:rotate(4deg) skewX(3deg) scale(.98)}
+  50%{transform:rotate(0deg) skewX(0deg) scale(1.02)}
+  75%{transform:rotate(-4deg) skewX(-3deg) scale(.98)}
+  100%{transform:rotate(0deg) skewX(0deg) scale(1)}
+}
+@keyframes svg3d-pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.045)}
+}
+@keyframes svg3d-wobble{
+  0%,100%{transform:rotate(0deg) skewY(0deg) translateY(0px)}
+  25%{transform:rotate(-2.8deg) skewY(1.8deg) translateY(-4px)}
+  75%{transform:rotate(2.8deg) skewY(-1.8deg) translateY(-2px)}
+}
+@keyframes svg3d-swing{
+  0%,100%{transform:rotate(0deg)}
+  25%{transform:rotate(5deg)}
+  75%{transform:rotate(-5deg)}
+}
+@keyframes svg3d-spin-float{
+  0%,100%{transform:translateY(0px) rotate(0deg) scale(1)}
+  25%{transform:translateY(-6px) rotate(2.5deg) scale(1.01)}
+  50%{transform:translateY(-12px) rotate(0deg) scale(1.025)}
+  75%{transform:translateY(-6px) rotate(-2.5deg) scale(1.01)}
+}
+@keyframes svg3d-bloom{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.055) rotate(2.5deg)}
+}
+@keyframes svg3d-bloom-inner{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.09) rotate(-4deg)}
+}
+
+/* Preset: FLOAT */
+.iso-svg[data-animate="float"] .iso-scene-root{
+  animation:svg3d-float calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="float"] [data-layer="detail"]{
+  animation:svg3d-float-detail calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="float"] .iso-halo{
+  animation:svg3d-halo-breathe calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+/* Preset: SPIN */
+.iso-svg[data-animate="spin"][data-mode="2d"] .iso-scene-root{
+  animation:svg3d-spin-2d calc(16s / var(--anim-speed, 1)) linear infinite;
+}
+.iso-svg[data-animate="spin"]:not([data-mode="2d"]) .iso-scene-root{
+  animation:svg3d-spin-3d calc(7s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+/* Preset: PULSE */
+.iso-svg[data-animate="pulse"] .iso-scene-root{
+  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="pulse"] [data-layer="detail"]{
+  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite 0.2s;
+}
+
+/* Preset: WOBBLE */
+.iso-svg[data-animate="wobble"] .iso-scene-root{
+  animation:svg3d-wobble calc(4.6s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+/* Preset: SWING */
+.iso-svg[data-animate="swing"] .iso-scene-root{
+  transform-origin:center 20%;
+  animation:svg3d-swing calc(3.8s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+/* Preset: SPIN-FLOAT */
+.iso-svg[data-animate="spin-float"] .iso-scene-root{
+  animation:svg3d-spin-float calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="spin-float"] [data-layer="detail"]{
+  animation:svg3d-float-detail calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="spin-float"] .iso-halo{
+  animation:svg3d-halo-breathe calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+/* Preset: BLOOM */
+.iso-svg[data-animate="bloom"] .iso-scene-root{
+  animation:svg3d-float calc(5s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="bloom"] [data-layer="main"]{
+  animation:svg3d-bloom calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+.iso-svg[data-animate="bloom"] [data-layer="detail"]{
+  animation:svg3d-bloom-inner calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse],.iso-svg .iso-scene-root,.iso-svg [data-layer]{animation:none!important}}
+
+
+  .rc-backdrop-card{fill:var(--anatomy-shade-2);stroke:var(--anatomy-lo);stroke-width:1.2px}
+  .iso[data-color-mode="color"] .rc-backdrop-card{fill:#f5f3ff;stroke:#ddd6fe}
+  .rc-hard-shadow{fill:#0b0e14;stroke:#0b0e14;stroke-width:3px;stroke-linejoin:round}
+  .rc-chassis-bg{fill:var(--anatomy-top)}
+  .iso[data-color-mode="color"] .rc-chassis-bg{fill:var(--pal-primary,#8b5cf6)}
+  .rc-slot-line{stroke:#0b0e14;stroke-width:3.5px;stroke-linecap:round}
+  .rc-screen-frame{fill:#1e293b;stroke:#0b0e14;stroke-width:4px}
+  .rc-screen-badge{fill:#94a3b8;font-family:ui-monospace,monospace;font-size:9px;font-weight:700;letter-spacing:0.05em}
+  .rc-lcd-matrix{fill:#86efac;stroke:#0b0e14;stroke-width:3.5px}
+  .rc-brand-title{fill:#ffffff;font-family:"Comic Sans MS","Chalkboard SE","Marker Felt",ui-rounded,system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:0.04em;text-anchor:middle}
+  .rc-btn-label{fill:#ffffff;font-family:ui-rounded,system-ui,sans-serif;font-size:12px;font-weight:900;text-anchor:middle}
+  .rc-bubble-bg{fill:var(--pal-accent,#facc15);stroke:#0b0e14;stroke-width:3.8px}
+  .rc-bubble-icon{font-size:17px}
+  .rc-bubble-text{fill:#0b0e14;font-family:"Comic Sans MS","Chalkboard SE",ui-rounded,system-ui,sans-serif;font-size:17px;font-weight:800;letter-spacing:0.02em}
+  .rc-ink-stroke{stroke:#0b0e14;stroke-width:4.4px;stroke-linecap:round;stroke-linejoin:round}
+  @keyframes rc-heart-beat{0%,100%{transform:scale(1)}30%{transform:scale(1.22)}60%{transform:scale(1.08)}}
+  .iso-svg:not([data-animate="static"]) .rc-heart-pulse{animation:rc-heart-beat 0.9s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+  </style>
+  <g class="iso-scene-root">
+    <g class="iso-view-3d"><g class="iso-base-plate" data-layer="base">
+      <path class="iso-halo" d="M6.1 332.5L7 328.2L9.4 324.2L13.1 320.5L18 317.2L326.1 150.8L332.1 148.2L338.9 146.2L346.2 145.1L353.8 144.7L361.4 145.2L368.7 146.5L375.3 148.6L381.2 151.4L602.9 279.8L607.7 283.1L611.2 286.9L613.3 291L613.9 295.3L613.9 308.2L613 312.5L610.6 316.5L606.9 320.2L602 323.5L293.9 489.9L287.9 492.5L281.1 494.5L273.8 495.6L266.2 496L258.6 495.5L251.3 494.2L244.7 492.1L238.8 489.3L17.1 360.9L12.3 357.6L8.8 353.8L6.7 349.7L6.1 345.4Z"/>
+      <g class="iso-solid" data-has-color="" data-tint="panel" style="--c-top:#dde3eb;--c-s0:#87919f;--c-s1:#a9b3c0;--c-s2:#cbd5e1;--c-s3:#d2dbe5;--c-edge:#5b606a;--c-crease:#e2e8ef"><path class="iso-fill" fill="#a9b3c0" d="M6.1 329.3L7 325L9.4 321L13.1 317.2L18 314L326.1 147.6L332.1 145L338.9 143L346.2 141.8L353.8 141.5L361.4 142L368.7 143.3L375.3 145.4L381.2 148.1L602.9 276.6L607.7 279.9L611.2 283.7L613.3 287.8L613.9 292.1L613.9 305L613 309.2L610.6 313.3L606.9 317L602 320.3L293.9 486.6L287.9 489.3L281.1 491.2L273.8 492.4L266.2 492.7L258.6 492.3L251.3 490.9L244.7 488.9L238.8 486.1L17.1 357.7L12.3 354.3L8.8 350.5L6.7 346.4L6.1 342.2Z"/><path class="iso-shade" fill="#87919f" data-shade="0" d="M613.9 305L613 309.2L613 296.3L613.9 292.1ZM613 309.2L610.6 313.3L610.6 300.4L613 296.3ZM610.6 313.3L606.9 317L606.9 304.1L610.6 300.4ZM606.9 317L602 320.3L602 307.4L606.9 304.1ZM602 320.3L293.9 486.6L293.9 473.7L602 307.4ZM293.9 486.6L287.9 489.3L287.9 476.4L293.9 473.7Z"/><path class="iso-shade" fill="#a9b3c0" data-shade="1" d="M287.9 489.3L281.1 491.2L281.1 478.3L287.9 476.4ZM281.1 491.2L273.8 492.4L273.8 479.5L281.1 478.3ZM273.8 492.4L266.2 492.7L266.2 479.8L273.8 479.5Z"/><path class="iso-shade" fill="#cbd5e1" data-shade="2" d="M266.2 492.7L258.6 492.3L258.6 479.3L266.2 479.8ZM258.6 492.3L251.3 490.9L251.3 478L258.6 479.3ZM251.3 490.9L244.7 488.9L244.7 476L251.3 478Z"/><path class="iso-shade" fill="#d2dbe5" data-shade="3" d="M244.7 488.9L238.8 486.1L238.8 473.2L244.7 476ZM238.8 486.1L17.1 357.7L17.1 344.8L238.8 473.2ZM17.1 357.7L12.3 354.3L12.3 341.4L17.1 344.8ZM12.3 354.3L8.8 350.5L8.8 337.6L12.3 341.4ZM8.8 350.5L6.7 346.4L6.7 333.5L8.8 337.6ZM6.7 346.4L6.1 342.2L6.1 329.3L6.7 333.5Z"/><path class="iso-top" fill="#dde3eb" d="M602.9 276.6L607.7 279.9L611.2 283.7L613.3 287.8L613.9 292.1L613 296.3L610.6 300.4L606.9 304.1L602 307.4L293.9 473.7L287.9 476.4L281.1 478.3L273.8 479.5L266.2 479.8L258.6 479.3L251.3 478L244.7 476L238.8 473.2L17.1 344.8L12.3 341.4L8.8 337.6L6.7 333.5L6.1 329.3L7 325L9.4 321L13.1 317.2L18 314L326.1 147.6L332.1 145L338.9 143L346.2 141.8L353.8 141.5L361.4 142L368.7 143.3L375.3 145.4L381.2 148.1Z"/><path class="iso-line iso-crease" stroke="#e2e8ef" data-tone="faint" d="M613.9 292.1L613 296.3L610.6 300.4L606.9 304.1L602 307.4L293.9 473.7L287.9 476.4L281.1 478.3L273.8 479.5L266.2 479.8L258.6 479.3L251.3 478L244.7 476L238.8 473.2L17.1 344.8L12.3 341.4L8.8 337.6L6.7 333.5L6.1 329.3"/><path class="iso-line iso-bevel" stroke="#e2e8ef" data-tone="faint" d="M613.9 292.1L610.3 296L608.1 299.8L604.7 303.2L600 306.3L292.1 472.6L286.4 475.1L280.1 476.9L273.3 478L266.2 478.3L259.2 477.9L252.4 476.6L246.2 474.7L240.7 472.1L19.1 343.8L14.6 340.6L11.4 337.1L9.4 333.2L6.1 329.3"/><path class="iso-line iso-edge" stroke="#5b606a" data-tone="lo" d="M6.1 329.3L7 325L9.4 321L13.1 317.2L18 314L326.1 147.6L332.1 145L338.9 143L346.2 141.8L353.8 141.5L361.4 142L368.7 143.3L375.3 145.4L381.2 148.1L602.9 276.6L607.7 279.9L611.2 283.7L613.3 287.8L613.9 292.1M613.9 305L613 309.2L610.6 313.3L606.9 317L602 320.3L293.9 486.6L287.9 489.3L281.1 491.2L273.8 492.4L266.2 492.7L258.6 492.3L251.3 490.9L244.7 488.9L238.8 486.1L17.1 357.7L12.3 354.3L8.8 350.5L6.7 346.4L6.1 342.2M613.9 292.1L613.9 305M6.1 329.3L6.1 342.2"/></g>
+    </g>
+    <g data-layer="main">
+      <g class="iso-solid" data-has-color="" data-tint="slate" style="--c-top:#99a3b2;--c-s0:#455368;--c-s1:#55637a;--c-s2:#64748b;--c-s3:#7a879b;--c-edge:#303846;--c-crease:#aab3bf"><path class="iso-fill" fill="#55637a" d="M27.6 324.5L28.3 321.1L30.2 317.8L33.1 314.9L37.1 312.3L314.4 162.5L319.2 160.4L324.6 158.8L330.5 157.9L336.6 157.6L342.6 158L348.4 159.1L353.8 160.7L358.4 162.9L545 271L548.8 273.7L551.6 276.7L553.3 280L553.8 283.4L553.8 291.5L553.1 294.9L551.2 298.1L548.2 301.1L544.3 303.7L267 453.4L262.2 455.6L256.8 457.1L250.9 458.1L244.8 458.3L238.7 457.9L232.9 456.9L227.6 455.2L222.9 453L36.3 344.9L32.5 342.3L29.7 339.2L28.1 335.9L27.6 332.5Z"/><path class="iso-shade" fill="#455368" data-shade="0" d="M553.8 291.5L553.1 294.9L553.1 286.8L553.8 283.4ZM553.1 294.9L551.2 298.1L551.2 290.1L553.1 286.8ZM551.2 298.1L548.2 301.1L548.2 293L551.2 290.1ZM548.2 301.1L544.3 303.7L544.3 295.6L548.2 293ZM544.3 303.7L267 453.4L267 445.4L544.3 295.6ZM267 453.4L262.2 455.6L262.2 447.5L267 445.4Z"/><path class="iso-shade" fill="#55637a" data-shade="1" d="M262.2 455.6L256.8 457.1L256.8 449.1L262.2 447.5ZM256.8 457.1L250.9 458.1L250.9 450L256.8 449.1ZM250.9 458.1L244.8 458.3L244.8 450.3L250.9 450Z"/><path class="iso-shade" fill="#64748b" data-shade="2" d="M244.8 458.3L238.7 457.9L238.7 449.9L244.8 450.3ZM238.7 457.9L232.9 456.9L232.9 448.8L238.7 449.9ZM232.9 456.9L227.6 455.2L227.6 447.2L232.9 448.8Z"/><path class="iso-shade" fill="#7a879b" data-shade="3" d="M227.6 455.2L222.9 453L222.9 444.9L227.6 447.2ZM222.9 453L36.3 344.9L36.3 336.9L222.9 444.9ZM36.3 344.9L32.5 342.3L32.5 334.2L36.3 336.9ZM32.5 342.3L29.7 339.2L29.7 331.2L32.5 334.2ZM29.7 339.2L28.1 335.9L28.1 327.9L29.7 331.2ZM28.1 335.9L27.6 332.5L27.6 324.5L28.1 327.9Z"/><path class="iso-top" fill="#99a3b2" d="M545 271L548.8 273.7L551.6 276.7L553.3 280L553.8 283.4L553.1 286.8L551.2 290.1L548.2 293L544.3 295.6L267 445.4L262.2 447.5L256.8 449.1L250.9 450L244.8 450.3L238.7 449.9L232.9 448.8L227.6 447.2L222.9 444.9L36.3 336.9L32.5 334.2L29.7 331.2L28.1 327.9L27.6 324.5L28.3 321.1L30.2 317.8L33.1 314.9L37.1 312.3L314.4 162.5L319.2 160.4L324.6 158.8L330.5 157.9L336.6 157.6L342.6 158L348.4 159.1L353.8 160.7L358.4 162.9Z"/><path class="iso-line iso-crease" stroke="#aab3bf" data-tone="faint" d="M553.8 283.4L553.1 286.8L551.2 290.1L548.2 293L544.3 295.6L267 445.4L262.2 447.5L256.8 449.1L250.9 450L244.8 450.3L238.7 449.9L232.9 448.8L227.6 447.2L222.9 444.9L36.3 336.9L32.5 334.2L29.7 331.2L28.1 327.9L27.6 324.5"/><path class="iso-line iso-bevel" stroke="#aab3bf" data-tone="faint" d="M553.8 283.4L552.1 286.7L550.3 289.8L547.4 292.7L543.6 295.3L266.4 445L261.7 447L256.4 448.5L250.7 449.5L244.8 449.7L239 449.3L233.3 448.3L228.2 446.7L223.6 444.6L37.1 336.5L33.3 333.9L30.7 331L29 327.8L27.6 324.5"/><path class="iso-line iso-edge" stroke="#303846" data-tone="hi" d="M27.6 324.5L28.3 321.1L30.2 317.8L33.1 314.9L37.1 312.3L314.4 162.5L319.2 160.4L324.6 158.8L330.5 157.9L336.6 157.6L342.6 158L348.4 159.1L353.8 160.7L358.4 162.9L545 271L548.8 273.7L551.6 276.7L553.3 280L553.8 283.4M553.8 291.5L553.1 294.9L551.2 298.1L548.2 301.1L544.3 303.7L267 453.4L262.2 455.6L256.8 457.1L250.9 458.1L244.8 458.3L238.7 457.9L232.9 456.9L227.6 455.2L222.9 453L36.3 344.9L32.5 342.3L29.7 339.2L28.1 335.9L27.6 332.5M553.8 283.4L553.8 291.5M27.6 324.5L27.6 332.5"/></g>
+      <g class="iso-solid" data-has-color="" data-tint="primary" style="--c-top:#989af6;--c-s0:#454aa9;--c-s1:#5458cd;--c-s2:#6366f1;--c-s3:#797bf3;--c-edge:#2f3271;--c-crease:#a9abf7"><path class="iso-fill" fill="#5458cd" d="M46.9 300.5L47.6 297.1L49.5 293.9L52.5 290.9L56.4 288.3L333.7 138.6L338.5 136.4L343.9 134.9L349.8 134L355.9 133.7L361.9 134.1L367.7 135.1L373.1 136.8L377.7 139L564.4 247.1L568.2 249.7L570.9 252.8L572.6 256.1L573.1 259.5L573.1 282.1L572.4 285.5L570.5 288.7L567.5 291.7L563.6 294.3L286.3 444L281.5 446.1L276.1 447.7L270.2 448.6L264.1 448.9L258.1 448.5L252.3 447.5L246.9 445.8L242.3 443.6L55.6 335.5L51.8 332.9L49.1 329.8L47.4 326.5L46.9 323.1Z"/><path class="iso-shade" fill="#454aa9" data-shade="0" d="M573.1 282.1L572.4 285.5L572.4 262.9L573.1 259.5ZM572.4 285.5L570.5 288.7L570.5 266.1L572.4 262.9ZM570.5 288.7L567.5 291.7L567.5 269.1L570.5 266.1ZM567.5 291.7L563.6 294.3L563.6 271.7L567.5 269.1ZM563.6 294.3L286.3 444L286.3 421.4L563.6 271.7ZM286.3 444L281.5 446.1L281.5 423.6L286.3 421.4Z"/><path class="iso-shade" fill="#5458cd" data-shade="1" d="M281.5 446.1L276.1 447.7L276.1 425.1L281.5 423.6ZM276.1 447.7L270.2 448.6L270.2 426L276.1 425.1ZM270.2 448.6L264.1 448.9L264.1 426.3L270.2 426Z"/><path class="iso-shade" fill="#6366f1" data-shade="2" d="M264.1 448.9L258.1 448.5L258.1 425.9L264.1 426.3ZM258.1 448.5L252.3 447.5L252.3 424.9L258.1 425.9ZM252.3 447.5L246.9 445.8L246.9 423.2L252.3 424.9Z"/><path class="iso-shade" fill="#797bf3" data-shade="3" d="M246.9 445.8L242.3 443.6L242.3 421L246.9 423.2ZM242.3 443.6L55.6 335.5L55.6 312.9L242.3 421ZM55.6 335.5L51.8 332.9L51.8 310.3L55.6 312.9ZM51.8 332.9L49.1 329.8L49.1 307.2L51.8 310.3ZM49.1 329.8L47.4 326.5L47.4 303.9L49.1 307.2ZM47.4 326.5L46.9 323.1L46.9 300.5L47.4 303.9Z"/><path class="iso-top" fill="#989af6" d="M564.4 247.1L568.2 249.7L570.9 252.8L572.6 256.1L573.1 259.5L572.4 262.9L570.5 266.1L567.5 269.1L563.6 271.7L286.3 421.4L281.5 423.6L276.1 425.1L270.2 426L264.1 426.3L258.1 425.9L252.3 424.9L246.9 423.2L242.3 421L55.6 312.9L51.8 310.3L49.1 307.2L47.4 303.9L46.9 300.5L47.6 297.1L49.5 293.9L52.5 290.9L56.4 288.3L333.7 138.6L338.5 136.4L343.9 134.9L349.8 134L355.9 133.7L361.9 134.1L367.7 135.1L373.1 136.8L377.7 139Z"/><path class="iso-line iso-crease" stroke="#a9abf7" data-tone="faint" d="M573.1 259.5L572.4 262.9L570.5 266.1L567.5 269.1L563.6 271.7L286.3 421.4L281.5 423.6L276.1 425.1L270.2 426L264.1 426.3L258.1 425.9L252.3 424.9L246.9 423.2L242.3 421L55.6 312.9L51.8 310.3L49.1 307.2L47.4 303.9L46.9 300.5"/><path class="iso-line iso-bevel" stroke="#a9abf7" data-tone="faint" d="M573.1 259.5L569.7 262.5L568 265.5L565.3 268.2L561.6 270.7L284.5 420.3L280 422.3L275.1 423.7L269.7 424.5L264.2 424.8L258.6 424.4L253.3 423.5L248.5 422L244.1 419.9L57.7 311.9L54.1 309.4L51.6 306.7L50.1 303.7L46.9 300.5"/><path class="iso-line iso-edge" stroke="#2f3271" data-tone="hi" d="M46.9 300.5L47.6 297.1L49.5 293.9L52.5 290.9L56.4 288.3L333.7 138.6L338.5 136.4L343.9 134.9L349.8 134L355.9 133.7L361.9 134.1L367.7 135.1L373.1 136.8L377.7 139L564.4 247.1L568.2 249.7L570.9 252.8L572.6 256.1L573.1 259.5M573.1 282.1L572.4 285.5L570.5 288.7L567.5 291.7L563.6 294.3L286.3 444L281.5 446.1L276.1 447.7L270.2 448.6L264.1 448.9L258.1 448.5L252.3 447.5L246.9 445.8L242.3 443.6L55.6 335.5L51.8 332.9L49.1 329.8L47.4 326.5L46.9 323.1M573.1 259.5L573.1 282.1M46.9 300.5L46.9 323.1"/></g>
+    </g>
+    <g data-layer="main">
+      <g class="iso-solid" data-has-color="" data-tint="chassis" style="--c-top:#ecf0f5;--c-s0:#969da9;--c-s1:#bcc2cc;--c-s2:#e2e8f0;--c-s3:#e6ebf2;--c-edge:#656870;--c-crease:#eff2f7"><path class="iso-fill" fill="#bcc2cc" d="M237.2 218.9L237.9 216.1L239.9 213.5L243.1 211.3L341.1 158.4L345.2 156.7L349.9 155.6L355 155.3L360 155.7L364.7 156.9L368.7 158.6L517.4 244.8L520.4 247.1L522.3 249.7L522.9 252.5L522.9 259L522.1 261.8L520.1 264.4L516.9 266.6L418.9 319.6L414.8 321.2L410.1 322.3L405 322.6L400 322.2L395.4 321.1L391.4 319.3L242.6 233.1L239.6 230.9L237.7 228.2L237.2 225.4Z"/><path class="iso-shade" fill="#969da9" data-shade="0" d="M522.9 259L522.1 261.8L522.1 255.3L522.9 252.5ZM522.1 261.8L520.1 264.4L520.1 257.9L522.1 255.3ZM520.1 264.4L516.9 266.6L516.9 260.2L520.1 257.9ZM516.9 266.6L418.9 319.6L418.9 313.1L516.9 260.2ZM418.9 319.6L414.8 321.2L414.8 314.8L418.9 313.1Z"/><path class="iso-shade" fill="#bcc2cc" data-shade="1" d="M414.8 321.2L410.1 322.3L410.1 315.8L414.8 314.8ZM410.1 322.3L405 322.6L405 316.2L410.1 315.8Z"/><path class="iso-shade" fill="#e2e8f0" data-shade="2" d="M405 322.6L400 322.2L400 315.7L405 316.2ZM400 322.2L395.4 321.1L395.4 314.6L400 315.7Z"/><path class="iso-shade" fill="#e6ebf2" data-shade="3" d="M395.4 321.1L391.4 319.3L391.4 312.8L395.4 314.6ZM391.4 319.3L242.6 233.1L242.6 226.7L391.4 312.8ZM242.6 233.1L239.6 230.9L239.6 224.4L242.6 226.7ZM239.6 230.9L237.7 228.2L237.7 221.8L239.6 224.4ZM237.7 228.2L237.2 225.4L237.2 218.9L237.7 221.8Z"/><path class="iso-top" fill="#ecf0f5" d="M517.4 244.8L520.4 247.1L522.3 249.7L522.9 252.5L522.1 255.3L520.1 257.9L516.9 260.2L418.9 313.1L414.8 314.8L410.1 315.8L405 316.2L400 315.7L395.4 314.6L391.4 312.8L242.6 226.7L239.6 224.4L237.7 221.8L237.2 218.9L237.9 216.1L239.9 213.5L243.1 211.3L341.1 158.4L345.2 156.7L349.9 155.6L355 155.3L360 155.7L364.7 156.9L368.7 158.6Z"/><path class="iso-line iso-crease" stroke="#eff2f7" data-tone="faint" d="M522.9 252.5L522.1 255.3L520.1 257.9L516.9 260.2L418.9 313.1L414.8 314.8L410.1 315.8L405 316.2L400 315.7L395.4 314.6L391.4 312.8L242.6 226.7L239.6 224.4L237.7 221.8L237.2 218.9"/><path class="iso-line iso-bevel" stroke="#eff2f7" data-tone="faint" d="M522.9 252.5L520.6 255.1L518.8 257.5L515.8 259.6L417.9 312.4L414.1 314L409.7 315L405.1 315.3L400.4 314.9L396.2 313.9L392.4 312.2L243.8 226.1L241 224L239.2 221.6L237.2 218.9"/><path class="iso-line iso-edge" stroke="#656870" data-tone="hi" d="M237.2 218.9L237.9 216.1L239.9 213.5L243.1 211.3L341.1 158.4L345.2 156.7L349.9 155.6L355 155.3L360 155.7L364.7 156.9L368.7 158.6L517.4 244.8L520.4 247.1L522.3 249.7L522.9 252.5M522.9 259L522.1 261.8L520.1 264.4L516.9 266.6L418.9 319.6L414.8 321.2L410.1 322.3L405 322.6L400 322.2L395.4 321.1L391.4 319.3L242.6 233.1L239.6 230.9L237.7 228.2L237.2 225.4M522.9 252.5L522.9 259M237.2 218.9L237.2 225.4"/></g>
+      <g class="iso-solid" data-has-color="" data-tint="stem" style="--c-top:#5aba9c;--c-s0:#096852;--c-s1:#077f5e;--c-s2:#059669;--c-s3:#28a57e;--c-edge:#084638;--c-crease:#76c5ad"><path class="iso-fill" fill="#077f5e" d="M268.2 219.9L269.2 217.4L271.8 215.3L346 175.2L349.8 173.8L354.3 173.4L358.8 173.9L362.5 175.4L481.5 244.3L484 246.4L484.8 248.9L484.8 252.2L483.8 254.6L481.2 256.7L407 296.8L403.2 298.2L398.7 298.7L394.3 298.1L390.5 296.7L271.5 227.7L269 225.6L268.2 223.1Z"/><path class="iso-shade" fill="#096852" data-shade="0" d="M484.8 252.2L483.8 254.6L483.8 251.4L484.8 248.9ZM483.8 254.6L481.2 256.7L481.2 253.5L483.8 251.4ZM481.2 256.7L407 296.8L407 293.6L481.2 253.5ZM407 296.8L403.2 298.2L403.2 295L407 293.6Z"/><path class="iso-shade" fill="#077f5e" data-shade="1" d="M403.2 298.2L398.7 298.7L398.7 295.4L403.2 295Z"/><path class="iso-shade" fill="#059669" data-shade="2" d="M398.7 298.7L394.3 298.1L394.3 294.9L398.7 295.4Z"/><path class="iso-shade" fill="#28a57e" data-shade="3" d="M394.3 298.1L390.5 296.7L390.5 293.4L394.3 294.9ZM390.5 296.7L271.5 227.7L271.5 224.5L390.5 293.4ZM271.5 227.7L269 225.6L269 222.4L271.5 224.5ZM269 225.6L268.2 223.1L268.2 219.9L269 222.4Z"/><path class="iso-top" fill="#5aba9c" d="M481.5 244.3L484 246.4L484.8 248.9L483.8 251.4L481.2 253.5L407 293.6L403.2 295L398.7 295.4L394.3 294.9L390.5 293.4L271.5 224.5L269 222.4L268.2 219.9L269.2 217.4L271.8 215.3L346 175.2L349.8 173.8L354.3 173.4L358.8 173.9L362.5 175.4Z"/><path class="iso-line iso-crease" stroke="#76c5ad" data-tone="faint" d="M484.8 248.9L483.8 251.4L481.2 253.5L407 293.6L403.2 295L398.7 295.4L394.3 294.9L390.5 293.4L271.5 224.5L269 222.4L268.2 219.9"/><path class="iso-line iso-bevel" stroke="#76c5ad" data-tone="faint" d="M484.8 248.9L482.8 251.2L480.4 253.1L406.3 293.1L402.8 294.4L398.7 294.8L394.7 294.3L391.3 292.9L272.4 224.1L270.1 222.1L268.2 219.9"/><path class="iso-line iso-edge" stroke="#084638" data-tone="hi" d="M268.2 219.9L269.2 217.4L271.8 215.3L346 175.2L349.8 173.8L354.3 173.4L358.8 173.9L362.5 175.4L481.5 244.3L484 246.4L484.8 248.9M484.8 252.2L483.8 254.6L481.2 256.7L407 296.8L403.2 298.2L398.7 298.7L394.3 298.1L390.5 296.7L271.5 227.7L269 225.6L268.2 223.1M484.8 248.9L484.8 252.2M268.2 219.9L268.2 223.1"/></g>
+      <text class="iso-face-text" data-tone="lit" transform="matrix(1.352 0.783 -1.4 0.756 368.818 237.747)" font-size="12" text-anchor="middle">❤️ LEVEL UP</text>
+    </g>
+    <g data-layer="detail">
+      <!-- D-Pad Cruceta 3D -->
+      <g class="iso-solid" data-has-color="" data-tint="slate" style="--c-top:#99a3b2;--c-s0:#455368;--c-s1:#55637a;--c-s2:#64748b;--c-s3:#7a879b;--c-edge:#303846;--c-crease:#aab3bf"><path class="iso-fill" fill="#55637a" d="M159.7 273.6L159.8 271.9L161.3 270.5L211.8 243.3L214.4 242.4L217.4 242.5L220 243.3L230.8 249.6L232.3 251.1L232.3 259.1L232.3 260.8L230.7 262.3L180.3 289.5L177.6 290.3L174.6 290.3L172 289.4L161.2 283.2L159.7 281.7Z"/><path class="iso-shade" fill="#455368" data-shade="0" d="M232.3 259.1L232.3 260.8L232.3 252.8L232.3 251.1ZM232.3 260.8L230.7 262.3L230.7 254.2L232.3 252.8ZM230.7 262.3L180.3 289.5L180.3 281.4L230.7 254.2Z"/><path class="iso-shade" fill="#55637a" data-shade="1" d="M180.3 289.5L177.6 290.3L177.6 282.3L180.3 281.4Z"/><path class="iso-shade" fill="#64748b" data-shade="2" d="M177.6 290.3L174.6 290.3L174.6 282.2L177.6 282.3Z"/><path class="iso-shade" fill="#7a879b" data-shade="3" d="M174.6 290.3L172 289.4L172 281.4L174.6 282.2ZM172 289.4L161.2 283.2L161.2 275.1L172 281.4ZM161.2 283.2L159.7 281.7L159.7 273.6L161.2 275.1Z"/><path class="iso-top" fill="#99a3b2" d="M230.8 249.6L232.3 251.1L232.3 252.8L230.7 254.2L180.3 281.4L177.6 282.3L174.6 282.2L172 281.4L161.2 275.1L159.7 273.6L159.8 271.9L161.3 270.5L211.8 243.3L214.4 242.4L217.4 242.5L220 243.3Z"/><path class="iso-line iso-crease" stroke="#aab3bf" data-tone="faint" d="M232.3 251.1L232.3 252.8L230.7 254.2L180.3 281.4L177.6 282.3L174.6 282.2L172 281.4L161.2 275.1L159.7 273.6"/><path class="iso-line iso-edge" stroke="#303846" data-tone="hi" d="M159.7 273.6L159.8 271.9L161.3 270.5L211.8 243.3L214.4 242.4L217.4 242.5L220 243.3L230.8 249.6L232.3 251.1M232.3 259.1L232.3 260.8L230.7 262.3L180.3 289.5L177.6 290.3L174.6 290.3L172 289.4L161.2 283.2L159.7 281.7M232.3 251.1L232.3 259.1M159.7 273.6L159.7 281.7"/></g>
+      <g class="iso-solid" data-has-color="" data-tint="slate" style="--c-top:#99a3b2;--c-s0:#455368;--c-s1:#55637a;--c-s2:#64748b;--c-s3:#7a879b;--c-edge:#303846;--c-crease:#aab3bf"><path class="iso-fill" fill="#55637a" d="M160.4 252.1L160.5 250.4L162 248.9L173.2 242.9L175.9 242.1L178.9 242.1L181.5 243L230.2 271.2L231.6 272.6L231.6 280.7L231.6 282.4L230 283.8L218.8 289.9L216.2 290.7L213.2 290.7L210.6 289.8L161.9 261.6L160.4 260.1Z"/><path class="iso-shade" fill="#455368" data-shade="0" d="M231.6 280.7L231.6 282.4L231.6 274.3L231.6 272.6ZM231.6 282.4L230 283.8L230 275.8L231.6 274.3ZM230 283.8L218.8 289.9L218.8 281.8L230 275.8Z"/><path class="iso-shade" fill="#55637a" data-shade="1" d="M218.8 289.9L216.2 290.7L216.2 282.6L218.8 281.8Z"/><path class="iso-shade" fill="#64748b" data-shade="2" d="M216.2 290.7L213.2 290.7L213.2 282.6L216.2 282.6Z"/><path class="iso-shade" fill="#7a879b" data-shade="3" d="M213.2 290.7L210.6 289.8L210.6 281.7L213.2 282.6ZM210.6 289.8L161.9 261.6L161.9 253.5L210.6 281.7ZM161.9 261.6L160.4 260.1L160.4 252.1L161.9 253.5Z"/><path class="iso-top" fill="#99a3b2" d="M230.2 271.2L231.6 272.6L231.6 274.3L230 275.8L218.8 281.8L216.2 282.6L213.2 282.6L210.6 281.7L161.9 253.5L160.4 252.1L160.5 250.4L162 248.9L173.2 242.9L175.9 242.1L178.9 242.1L181.5 243Z"/><path class="iso-line iso-crease" stroke="#aab3bf" data-tone="faint" d="M231.6 272.6L231.6 274.3L230 275.8L218.8 281.8L216.2 282.6L213.2 282.6L210.6 281.7L161.9 253.5L160.4 252.1"/><path class="iso-line iso-edge" stroke="#303846" data-tone="hi" d="M160.4 252.1L160.5 250.4L162 248.9L173.2 242.9L175.9 242.1L178.9 242.1L181.5 243L230.2 271.2L231.6 272.6M231.6 280.7L231.6 282.4L230 283.8L218.8 289.9L216.2 290.7L213.2 290.7L210.6 289.8L161.9 261.6L160.4 260.1M231.6 272.6L231.6 280.7M160.4 252.1L160.4 260.1"/></g>
+
+      <!-- Botones A/B Cilíndricos 3D -->
+      <g class="iso-solid" data-has-color="" data-tint="accent" style="--c-top:#f88095;--c-s0:#a2314b;--c-s1:#cb3855;--c-s2:#f43f5e;--c-s3:#f65a75;--c-edge:#6c2133;--c-crease:#f995a6"><path class="iso-fill" fill="#cb3855" d="M302.8 318L303.6 315.2L305.6 312.6L308.8 310.3L312.8 308.6L317.6 307.6L322.6 307.3L327.6 307.7L332.3 308.8L336.3 310.6L339.3 312.9L341.2 315.5L341.7 318.4L341.7 328L341 330.9L339 333.5L335.8 335.7L331.7 337.4L327 338.4L321.9 338.7L316.9 338.3L312.2 337.2L308.3 335.4L305.2 333.1L303.4 330.5L302.8 327.7Z"/><path class="iso-shade" fill="#a2314b" data-shade="0" d="M335.8 335.7L331.7 337.4L331.7 327.7L335.8 326ZM341.7 328L341 330.9L341 321.2L341.7 318.4ZM341 330.9L339 333.5L339 323.8L341 321.2ZM339 333.5L335.8 335.7L335.8 326L339 323.8Z"/><path class="iso-shade" fill="#cb3855" data-shade="1" d="M331.7 337.4L327 338.4L327 328.7L331.7 327.7ZM327 338.4L321.9 338.7L321.9 329.1L327 328.7Z"/><path class="iso-shade" fill="#f43f5e" data-shade="2" d="M321.9 338.7L316.9 338.3L316.9 328.6L321.9 329.1ZM316.9 338.3L312.2 337.2L312.2 327.5L316.9 328.6Z"/><path class="iso-shade" fill="#f65a75" data-shade="3" d="M312.2 337.2L308.3 335.4L308.3 325.7L312.2 327.5ZM308.3 335.4L305.2 333.1L305.2 323.4L308.3 325.7ZM305.2 333.1L303.4 330.5L303.4 320.8L305.2 323.4ZM303.4 330.5L302.8 327.7L302.8 318L303.4 320.8Z"/><path class="iso-top" fill="#f88095" d="M335.8 326L331.7 327.7L327 328.7L321.9 329.1L316.9 328.6L312.2 327.5L308.3 325.7L305.2 323.4L303.4 320.8L302.8 318L303.6 315.2L305.6 312.6L308.8 310.3L312.8 308.6L317.6 307.6L322.6 307.3L327.6 307.7L332.3 308.8L336.3 310.6L339.3 312.9L341.2 315.5L341.7 318.4L341 321.2L339 323.8Z"/><path class="iso-line iso-crease" stroke="#f995a6" data-tone="faint" d="M341.7 318.4L341 321.2L339 323.8L335.8 326L331.7 327.7L327 328.7L321.9 329.1L316.9 328.6L312.2 327.5L308.3 325.7L305.2 323.4L303.4 320.8L302.8 318"/><path class="iso-line iso-bevel" stroke="#f995a6" data-tone="faint" d="M341.7 318.4L339.5 320.9L337.6 323.3L334.7 325.4L331 326.9L326.6 327.9L322 328.2L317.3 327.8L313 326.8L309.4 325.1L306.6 323L304.9 320.6L302.8 318"/><path class="iso-line iso-edge" stroke="#6c2133" data-tone="hi" d="M302.8 318L303.6 315.2L305.6 312.6L308.8 310.3L312.8 308.6L317.6 307.6L322.6 307.3L327.6 307.7L332.3 308.8L336.3 310.6L339.3 312.9L341.2 315.5L341.7 318.4M341.7 328L341 330.9L339 333.5L335.8 335.7L331.7 337.4L327 338.4L321.9 338.7L316.9 338.3L312.2 337.2L308.3 335.4L305.2 333.1L303.4 330.5L302.8 327.7M302.8 318L302.8 327.7M341.7 318.4L341.7 328"/></g>
+      <g class="iso-solid" data-has-color="" data-tint="petal" style="--c-top:#fca1ae;--c-s0:#a65164;--c-s1:#d16175;--c-s2:#fb7185;--c-s3:#fc8596;--c-edge:#6f3643;--c-crease:#fdb1bc"><path class="iso-fill" fill="#d16175" d="M355 323.1L355.7 320.3L357.7 317.7L360.9 315.5L365 313.8L369.7 312.7L374.8 312.4L379.8 312.8L384.5 314L388.4 315.7L391.5 318L393.3 320.7L393.9 323.5L393.9 333.2L393.1 336L391.1 338.6L388 340.8L383.9 342.5L379.1 343.5L374.1 343.9L369.1 343.4L364.4 342.3L360.4 340.5L357.4 338.3L355.5 335.6L355 332.8Z"/><path class="iso-shade" fill="#a65164" data-shade="0" d="M388 340.8L383.9 342.5L383.9 332.8L388 331.1ZM393.9 333.2L393.1 336L393.1 326.3L393.9 323.5ZM393.1 336L391.1 338.6L391.1 328.9L393.1 326.3ZM391.1 338.6L388 340.8L388 331.1L391.1 328.9Z"/><path class="iso-shade" fill="#d16175" data-shade="1" d="M383.9 342.5L379.1 343.5L379.1 333.9L383.9 332.8ZM379.1 343.5L374.1 343.9L374.1 334.2L379.1 333.9Z"/><path class="iso-shade" fill="#fb7185" data-shade="2" d="M374.1 343.9L369.1 343.4L369.1 333.8L374.1 334.2ZM369.1 343.4L364.4 342.3L364.4 332.6L369.1 333.8Z"/><path class="iso-shade" fill="#fc8596" data-shade="3" d="M364.4 342.3L360.4 340.5L360.4 330.9L364.4 332.6ZM360.4 340.5L357.4 338.3L357.4 328.6L360.4 330.9ZM357.4 338.3L355.5 335.6L355.5 325.9L357.4 328.6ZM355.5 335.6L355 332.8L355 323.1L355.5 325.9Z"/><path class="iso-top" fill="#fca1ae" d="M388 331.1L383.9 332.8L379.1 333.9L374.1 334.2L369.1 333.8L364.4 332.6L360.4 330.9L357.4 328.6L355.5 325.9L355 323.1L355.7 320.3L357.7 317.7L360.9 315.5L365 313.8L369.7 312.7L374.8 312.4L379.8 312.8L384.5 314L388.4 315.7L391.5 318L393.3 320.7L393.9 323.5L393.1 326.3L391.1 328.9Z"/><path class="iso-line iso-crease" stroke="#fdb1bc" data-tone="faint" d="M393.9 323.5L393.1 326.3L391.1 328.9L388 331.1L383.9 332.8L379.1 333.9L374.1 334.2L369.1 333.8L364.4 332.6L360.4 330.9L357.4 328.6L355.5 325.9L355 323.1"/><path class="iso-line iso-bevel" stroke="#fdb1bc" data-tone="faint" d="M393.9 323.5L391.7 326.1L389.8 328.5L386.9 330.5L383.1 332.1L378.8 333L374.1 333.3L369.5 332.9L365.2 331.9L361.5 330.3L358.8 328.2L357.1 325.7L355 323.1"/><path class="iso-line iso-edge" stroke="#6f3643" data-tone="hi" d="M355 323.1L355.7 320.3L357.7 317.7L360.9 315.5L365 313.8L369.7 312.7L374.8 312.4L379.8 312.8L384.5 314L388.4 315.7L391.5 318L393.3 320.7L393.9 323.5M393.9 333.2L393.1 336L391.1 338.6L388 340.8L383.9 342.5L379.1 343.5L374.1 343.9L369.1 343.4L364.4 342.3L360.4 340.5L357.4 338.3L355.5 335.6L355 332.8M355 323.1L355 332.8M393.9 323.5L393.9 333.2"/></g>
+    </g></g>
+    <g class="iso-view-2d"><g class="iso-base-plate" data-layer="base">
+      <g transform="translate(310, 280)">
+        <rect x="-188" y="-235" width="376" height="470" rx="30" class="rc-backdrop-card" />
+      </g>
+    </g>
+    
+    <g transform="translate(310, 280)">
+      <!-- Sombra dura desplazada del chasis de la consola -->
+      <g data-layer="base">
+        <rect x="-132" y="-172" width="264" height="344" rx="26" class="rc-hard-shadow" />
+      </g>
+
+      <!-- Cuerpo Chasis de la Consola Gameboy Portátil -->
+      <g data-layer="main">
+        <!-- Chasis Lila/Lavanda entintado -->
+        <rect x="-140" y="-180" width="264" height="344" rx="24" class="rc-chassis-bg" />
+
+        <!-- Ranuras de ventilación / detalles superiores -->
+        <line x1="-100" y1="-165" x2="-60" y2="-165" class="rc-slot-line" />
+        <line x1="-50" y1="-165" x2="-10" y2="-165" class="rc-slot-line" />
+        <circle cx="100" cy="-165" r="4" fill="#ef4444" stroke="#0b0e14" stroke-width="2.5" />
+
+        <!-- Marco Exterior de la Pantalla Gris Oscuro -->
+        <g transform="translate(0, -78)">
+          <rect x="-105" y="-62" width="210" height="136" rx="14" class="rc-screen-frame" />
+          <line x1="-105" y1="-44" x2="105" y2="-44" stroke="#0b0e14" stroke-width="2.5" />
+          <text x="-95" y="-50" class="rc-screen-badge">8-BIT MATRIX</text>
+          <circle cx="92" cy="-52" r="3" fill="#10b981" />
+
+          <!-- Pantalla Interior Verde Retroiluminada (Game Boy Matrix) -->
+          <rect x="-76" y="-36" width="152" height="98" rx="8" class="rc-lcd-matrix" />
+
+          <!-- Corazón de Píxeles 8-Bit (Latiendo con animación) -->
+          <g class="rc-heart-pulse" transform="translate(0, 10)">
+            <!-- Rejilla de píxeles formando un corazón retro -->
+            <rect x="-24" y="-20" width="10" height="10" fill="#064e3b" />
+            <rect x="-14" y="-20" width="10" height="10" fill="#064e3b" />
+            <rect x="4" y="-20" width="10" height="10" fill="#064e3b" />
+            <rect x="14" y="-20" width="10" height="10" fill="#064e3b" />
+
+            <rect x="-34" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="-24" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="-14" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="-4" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="6" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="16" y="-10" width="10" height="10" fill="#064e3b" />
+            <rect x="24" y="-10" width="10" height="10" fill="#064e3b" />
+
+            <rect x="-34" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="-24" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="-14" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="-4" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="6" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="16" y="0" width="10" height="10" fill="#064e3b" />
+            <rect x="24" y="0" width="10" height="10" fill="#064e3b" />
+
+            <rect x="-24" y="10" width="10" height="10" fill="#064e3b" />
+            <rect x="-14" y="10" width="10" height="10" fill="#064e3b" />
+            <rect x="-4" y="10" width="10" height="10" fill="#064e3b" />
+            <rect x="6" y="10" width="10" height="10" fill="#064e3b" />
+            <rect x="14" y="10" width="10" height="10" fill="#064e3b" />
+
+            <rect x="-14" y="20" width="10" height="10" fill="#064e3b" />
+            <rect x="-4" y="20" width="10" height="10" fill="#064e3b" />
+            <rect x="4" y="20" width="10" height="10" fill="#064e3b" />
+
+            <rect x="-4" y="30" width="10" height="10" fill="#064e3b" />
+          </g>
+        </g>
+
+        <!-- Marca de la consola "RETRO PLAY" -->
+        <text x="0" y="22" class="rc-brand-title">RETRO PLAY</text>
+
+        <!-- Controles Inferiores (D-Pad Cruceta a la izquierda, Botones A/B a la derecha) -->
+        <g transform="translate(0, 68)">
+          <!-- D-Pad Cruceta Negra entintada -->
+          <g transform="translate(-64, 18)">
+            <!-- Sombra del D-pad -->
+            <path d="M -10 -28 H 10 V -10 H 28 V 10 H 10 V 28 H -10 V 10 H -28 V -10 H -10 Z" transform="translate(3, 4)" class="rc-hard-shadow" />
+            <!-- Cruceta entintada -->
+            <path d="M -10 -28 H 10 V -10 H 28 V 10 H 10 V 28 H -10 V 10 H -28 V -10 H -10 Z" fill="#0b0e14" stroke="#0b0e14" stroke-width="3" stroke-linejoin="round" />
+            <circle cx="0" cy="0" r="4.5" fill="#1e293b" />
+          </g>
+
+          <!-- Botones Candy A y B Diagonales (Magenta y Cian) -->
+          <g transform="translate(56, 16)">
+            <!-- Botón B (Cian) -->
+            <g transform="translate(-18, 12)">
+              <circle cx="0" cy="0" r="14" class="rc-hard-shadow" transform="translate(2, 3)" />
+              <circle cx="0" cy="0" r="14" fill="#06b6d4" stroke="#0b0e14" stroke-width="3.6" />
+              <text x="0" y="5" class="rc-btn-label">B</text>
+            </g>
+            <!-- Botón A (Magenta) -->
+            <g transform="translate(16, -10)">
+              <circle cx="0" cy="0" r="14" class="rc-hard-shadow" transform="translate(2, 3)" />
+              <circle cx="0" cy="0" r="14" fill="#f43f5e" stroke="#0b0e14" stroke-width="3.6" />
+              <text x="0" y="5" class="rc-btn-label">A</text>
+            </g>
+          </g>
+
+          <!-- Botones Select y Start en píldoras inclinadas -->
+          <g transform="translate(-18, 62) rotate(-22)">
+            <rect x="-12" y="-4" width="24" height="8" rx="4" fill="#475569" stroke="#0b0e14" stroke-width="2.5" />
+          </g>
+          <g transform="translate(18, 62) rotate(-22)">
+            <rect x="-12" y="-4" width="24" height="8" rx="4" fill="#475569" stroke="#0b0e14" stroke-width="2.5" />
+          </g>
+        </g>
+
+        <!-- Altavoces / Rejilla acústica en la esquina inferior derecha -->
+        <g transform="translate(85, 134) rotate(-28)">
+          <line x1="-12" y1="-6" x2="12" y2="-6" stroke="#0b0e14" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#0b0e14" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="-12" y1="6" x2="12" y2="6" stroke="#0b0e14" stroke-width="3.5" stroke-linecap="round" />
+        </g>
+
+        <!-- Contorno exterior grueso entintado del chasis -->
+        <rect x="-140" y="-180" width="264" height="344" rx="24" fill="none" class="rc-ink-stroke" />
+      </g>
+
+      <!-- Burbuja Emergente Sticker [❤️ LEVEL UP!] (Layer Detail) -->
+      <g data-layer="detail" transform="translate(45, -135) rotate(-6)">
+        <!-- Sombra dura de la burbuja -->
+        <rect x="-70" y="-20" width="140" height="40" rx="20" class="rc-hard-shadow" transform="translate(4, 4)" />
+        <!-- Píldora amarilla vibrante entintada -->
+        <rect x="-70" y="-20" width="140" height="40" rx="20" class="rc-bubble-bg" />
+        <text x="-56" y="6" class="rc-bubble-icon">❤️</text>
+        <text x="-30" y="6" class="rc-bubble-text">LEVEL UP!</text>
+      </g>
+    </g></g>
+  </g>
+</svg>
+        </div>
+      </div>
+
+      <div class="floating-dock">
+        <button class="dock-btn" onclick="zoomStep(-0.2)" title="Zoom Out">−</button>
+        <span class="zoom-readout" id="zoom-readout">100%</span>
+        <button class="dock-btn" onclick="zoomStep(0.2)" title="Zoom In">+</button>
+        <button class="dock-btn" onclick="resetZoomAndPan()" title="Fit to Screen">Fit</button>
+        <div class="dock-sep"></div>
+        <button class="dock-btn active" id="btn-drag-pan" onclick="setDragMode('pan')">✋ Pan</button>
+        <button class="dock-btn" id="btn-drag-orbit" onclick="setDragMode('orbit')">🌐 3D Orbit (360°)</button>
+        <button class="dock-btn" id="btn-auto-spin" onclick="toggleAutoSpin()" title="Auto-Rotate 360° Turntable">▶ Turntable</button>
+        <button class="dock-btn" onclick="resetOrbit()" title="Reset 3D Angles">Reset Angle</button>
+      </div>
+    </main>
+
+    <!-- Panel Lateral del Studio -->
+    <aside class="sidebar">
+      <!-- 1. Dimensión: 2D Plano vs 3D Volumétrico -->
+      <div class="section">
+        <div class="section-title">
+          <span>1. Dimensión (2D Flat / 3D)</span>
+        </div>
+        <div class="segmented">
+          <button id="mode-3d-btn" class="active" onclick="setDimensionMode('3d')">🧊 3D Volumetric</button>
+          <button id="mode-2d-btn" onclick="setDimensionMode('2d')">📐 2D Flat Vector</button>
+        </div>
+        <div class="control-row">
+          <span>Tilt X (Pitch)</span>
+          <input type="range" id="tilt-x" min="-90" max="90" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-x-val">0°</span>
+        </div>
+        <div class="control-row">
+          <span>Yaw Y (360°)</span>
+          <input type="range" id="tilt-y" min="-180" max="180" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-y-val">0°</span>
+        </div>
+        <div class="control-row">
+          <span>Roll Z</span>
+          <input type="range" id="tilt-z" min="-180" max="180" value="0" oninput="updateOrbitFromSliders()">
+          <span class="val" id="tilt-z-val">0°</span>
+        </div>
+        <div class="preset-grid" style="margin-top: 4px;">
+          <button class="preset-btn" onclick="setAnglePreset(0, 0, 0)">🎯 De Frente (0°)</button>
+          <button class="preset-btn" onclick="setAnglePreset(18, -32, 0)">🧊 Vista Iso</button>
+          <button class="preset-btn" onclick="setAnglePreset(0, 180, 0)">🔄 Voltear 180°</button>
+          <button class="preset-btn" onclick="setAnglePreset(80, 0, 0)">📐 Vista Cenital</button>
+        </div>
+      </div>
+
+      <!-- 2. Modo de Color y Paletas -->
+      <div class="section">
+        <div class="section-title">
+          <span>2. Color &amp; Material</span>
+        </div>
+        <div class="segmented">
+          <button id="color-mono-btn" onclick="setColorMode('mono')">◐ B&amp;W Mono</button>
+          <button id="color-full-btn" onclick="setColorMode('color')">🎨 Full Color</button>
+        </div>
+        <div class="segmented" style="margin-top: 4px;">
+          <button id="theme-light-btn" onclick="setTheme('light')">☀ Light Tone</button>
+          <button id="theme-dark-btn" onclick="setTheme('dark')">🌙 Dark Tone</button>
+        </div>
+
+        <div class="section-title" style="margin-top: 6px;">
+          <span>Paletas de Material</span>
+        </div>
+        <div class="preset-grid" id="palette-grid">
+          <button class="preset-btn" data-pal="botanical" onclick="setPalette('botanical')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#fb7185,#10b981)"></span>Botanical
+          </button>
+          <button class="preset-btn" data-pal="vibrant" onclick="setPalette('vibrant')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#6366f1,#0ea5e9)"></span>Vibrant
+          </button>
+          <button class="preset-btn" data-pal="cyber-neon" onclick="setPalette('cyber-neon')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#06b6d4,#a855f7)"></span>Cyber Neon
+          </button>
+          <button class="preset-btn" data-pal="warm-craft" onclick="setPalette('warm-craft')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#d97706,#dc2626)"></span>Warm Craft
+          </button>
+          <button class="preset-btn" data-pal="blueprint" onclick="setPalette('blueprint')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#3b82f6,#38bdf8)"></span>Blueprint
+          </button>
+          <button class="preset-btn" data-pal="gold-onyx" onclick="setPalette('gold-onyx')">
+            <span class="swatch-dot" style="background: linear-gradient(135deg,#eab308,#27272a)"></span>Gold &amp; Onyx
+          </button>
+        </div>
+
+        <div class="section-title" style="margin-top: 6px;">
+          <span>Color Personalizado &amp; Trazo</span>
+        </div>
+        <div class="color-pickers">
+          <label class="color-picker-item">
+            <input type="color" id="custom-primary" value="#fb7185" oninput="applyCustomTint('primary', this.value)">
+            <span>Main</span>
+          </label>
+          <label class="color-picker-item">
+            <input type="color" id="custom-secondary" value="#10b981" oninput="applyCustomTint('secondary', this.value)">
+            <span>Sub</span>
+          </label>
+          <label class="color-picker-item">
+            <input type="color" id="custom-accent" value="#f59e0b" oninput="applyCustomTint('accent', this.value)">
+            <span>Accent</span>
+          </label>
+        </div>
+        <div class="control-row" style="margin-top: 4px;">
+          <span>Line Weight</span>
+          <input type="range" id="stroke-weight" min="0.3" max="1.8" step="0.1" value="0.6" oninput="setStrokeWeight(this.value)">
+          <span class="val" id="stroke-weight-val">0.6px</span>
+        </div>
+      </div>
+
+      <!-- 3. Animaciones (Presets 3dsvg) -->
+      <div class="section">
+        <div class="section-title">
+          <span>3. Animaciones (2D &amp; 3D)</span>
+        </div>
+        <div class="preset-grid" id="anim-grid">
+          <button class="preset-btn" data-anim="static" onclick="setAnimation('static')">⏹ Static</button>
+          <button class="preset-btn" data-anim="float" onclick="setAnimation('float')">☁ Float</button>
+          <button class="preset-btn" data-anim="spin" onclick="setAnimation('spin')">🔄 Spin / Orbit</button>
+          <button class="preset-btn" data-anim="pulse" onclick="setAnimation('pulse')">💓 Pulse</button>
+          <button class="preset-btn" data-anim="wobble" onclick="setAnimation('wobble')">〰 Wobble</button>
+          <button class="preset-btn" data-anim="swing" onclick="setAnimation('swing')">🔔 Swing</button>
+          <button class="preset-btn" data-anim="spin-float" onclick="setAnimation('spin-float')">✨ Spin+Float</button>
+          <button class="preset-btn" data-anim="bloom" onclick="setAnimation('bloom')">🌸 Bloom</button>
+        </div>
+        <div class="control-row" style="margin-top: 4px;">
+          <span>Speed</span>
+          <input type="range" id="anim-speed" min="0.4" max="2.5" step="0.1" value="1.0" oninput="setAnimSpeed(this.value)">
+          <span class="val" id="anim-speed-val">1.0x</span>
+        </div>
+      </div>
+
+      <!-- 4. Escena y Fondo (Background-Ready) -->
+      <div class="section">
+        <div class="section-title">
+          <span>4. Composición &amp; Fondo</span>
+        </div>
+        <div class="segmented">
+          <button id="plate-show-btn" class="active" onclick="setBasePlate(true)">▭ With Base Plate</button>
+          <button id="plate-hide-btn" onclick="setBasePlate(false)">✨ No Plate (BG Ready)</button>
+        </div>
+        <div class="preset-grid" style="margin-top: 4px;">
+          <button class="preset-btn active" data-bg="dark-grid" onclick="setBackdrop('dark-grid')">Dark Grid</button>
+          <button class="preset-btn" data-bg="light-paper" onclick="setBackdrop('light-paper')">White Paper</button>
+          <button class="preset-btn" data-bg="checker" onclick="setBackdrop('checker')">Transparent</button>
+          <button class="preset-btn" data-bg="aurora" onclick="setBackdrop('aurora')">Aurora Hero</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const PALETTES = {"vibrant":{"primary":"#6366f1","secondary":"#0ea5e9","accent":"#f43f5e","petal":"#fb7185","petal-deep":"#e11d48","leaf":"#10b981","stem":"#059669","gold":"#f59e0b","copper":"#d97706","chassis":"#e2e8f0","panel":"#cbd5e1","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"botanical":{"primary":"#f43f5e","secondary":"#10b981","accent":"#f59e0b","petal":"#fb7185","petal-deep":"#e11d48","leaf":"#10b981","stem":"#059669","gold":"#fbbf24","copper":"#d97706","chassis":"#ffe4e6","panel":"#d1fae5","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"cyber-neon":{"primary":"#06b6d4","secondary":"#8b5cf6","accent":"#f43f5e","petal":"#22d3ee","petal-deep":"#a855f7","leaf":"#10b981","stem":"#0891b2","gold":"#facc15","copper":"#f97316","chassis":"#38bdf8","panel":"#818cf8","pcb":"#14b8a6","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"warm-craft":{"primary":"#d97706","secondary":"#b45309","accent":"#dc2626","petal":"#fb923c","petal-deep":"#ea580c","leaf":"#65a30d","stem":"#4d7c0f","gold":"#eab308","copper":"#ea580c","chassis":"#fde68a","panel":"#fed7aa","pcb":"#10b981","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"blueprint":{"primary":"#3b82f6","secondary":"#60a5fa","accent":"#38bdf8","petal":"#60a5fa","petal-deep":"#2563eb","leaf":"#38bdf8","stem":"#0284c7","gold":"#facc15","copper":"#93c5fd","chassis":"#93c5fd","panel":"#bfdbfe","pcb":"#2563eb","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"},"gold-onyx":{"primary":"#eab308","secondary":"#ca8a04","accent":"#f59e0b","petal":"#fde047","petal-deep":"#ca8a04","leaf":"#eab308","stem":"#a16207","gold":"#fef08a","copper":"#f59e0b","chassis":"#71717a","panel":"#a1a1aa","pcb":"#ca8a04","wood":"#d97706","brass":"#eab308","cobalt":"#3b82f6","violet":"#8b5cf6","cyan":"#06b6d4","emerald":"#10b981","rose":"#f43f5e","amber":"#f59e0b","slate":"#64748b"}};
+    const EXTRA_ANIM_CSS = "\n.iso-svg{\n  --anim-speed:1;\n}\n.iso-svg .iso-scene-root,\n.iso-svg [data-layer],\n.iso-svg .iso-halo,\n.iso-svg .iso-petal-ring{\n  transform-box:fill-box;\n  transform-origin:center center;\n}\n\n@keyframes svg3d-float{\n  0%,100%{transform:translateY(0px)}\n  50%{transform:translateY(-10px)}\n}\n@keyframes svg3d-float-detail{\n  0%,100%{transform:translateY(0px)}\n  50%{transform:translateY(-14px)}\n}\n@keyframes svg3d-halo-breathe{\n  0%,100%{transform:translateY(3px) scale(1);opacity:var(--anatomy-halo-opacity,.32)}\n  50%{transform:translateY(3px) scale(.92);opacity:calc(var(--anatomy-halo-opacity,.32) * .65)}\n}\n@keyframes svg3d-spin-2d{\n  0%{transform:rotate(0deg)}\n  100%{transform:rotate(360deg)}\n}\n@keyframes svg3d-spin-3d{\n  0%{transform:rotate(0deg) skewX(0deg) scale(1)}\n  25%{transform:rotate(4deg) skewX(3deg) scale(.98)}\n  50%{transform:rotate(0deg) skewX(0deg) scale(1.02)}\n  75%{transform:rotate(-4deg) skewX(-3deg) scale(.98)}\n  100%{transform:rotate(0deg) skewX(0deg) scale(1)}\n}\n@keyframes svg3d-pulse{\n  0%,100%{transform:scale(1)}\n  50%{transform:scale(1.045)}\n}\n@keyframes svg3d-wobble{\n  0%,100%{transform:rotate(0deg) skewY(0deg) translateY(0px)}\n  25%{transform:rotate(-2.8deg) skewY(1.8deg) translateY(-4px)}\n  75%{transform:rotate(2.8deg) skewY(-1.8deg) translateY(-2px)}\n}\n@keyframes svg3d-swing{\n  0%,100%{transform:rotate(0deg)}\n  25%{transform:rotate(5deg)}\n  75%{transform:rotate(-5deg)}\n}\n@keyframes svg3d-spin-float{\n  0%,100%{transform:translateY(0px) rotate(0deg) scale(1)}\n  25%{transform:translateY(-6px) rotate(2.5deg) scale(1.01)}\n  50%{transform:translateY(-12px) rotate(0deg) scale(1.025)}\n  75%{transform:translateY(-6px) rotate(-2.5deg) scale(1.01)}\n}\n@keyframes svg3d-bloom{\n  0%,100%{transform:scale(1) rotate(0deg)}\n  50%{transform:scale(1.055) rotate(2.5deg)}\n}\n@keyframes svg3d-bloom-inner{\n  0%,100%{transform:scale(1) rotate(0deg)}\n  50%{transform:scale(1.09) rotate(-4deg)}\n}\n\n/* Preset: FLOAT */\n.iso-svg[data-animate=\"float\"] .iso-scene-root{\n  animation:svg3d-float calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"float\"] [data-layer=\"detail\"]{\n  animation:svg3d-float-detail calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"float\"] .iso-halo{\n  animation:svg3d-halo-breathe calc(4.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SPIN */\n.iso-svg[data-animate=\"spin\"][data-mode=\"2d\"] .iso-scene-root{\n  animation:svg3d-spin-2d calc(16s / var(--anim-speed, 1)) linear infinite;\n}\n.iso-svg[data-animate=\"spin\"]:not([data-mode=\"2d\"]) .iso-scene-root{\n  animation:svg3d-spin-3d calc(7s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: PULSE */\n.iso-svg[data-animate=\"pulse\"] .iso-scene-root{\n  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"pulse\"] [data-layer=\"detail\"]{\n  animation:svg3d-pulse calc(2.8s / var(--anim-speed, 1)) ease-in-out infinite 0.2s;\n}\n\n/* Preset: WOBBLE */\n.iso-svg[data-animate=\"wobble\"] .iso-scene-root{\n  animation:svg3d-wobble calc(4.6s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SWING */\n.iso-svg[data-animate=\"swing\"] .iso-scene-root{\n  transform-origin:center 20%;\n  animation:svg3d-swing calc(3.8s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: SPIN-FLOAT */\n.iso-svg[data-animate=\"spin-float\"] .iso-scene-root{\n  animation:svg3d-spin-float calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"spin-float\"] [data-layer=\"detail\"]{\n  animation:svg3d-float-detail calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"spin-float\"] .iso-halo{\n  animation:svg3d-halo-breathe calc(5.2s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n\n/* Preset: BLOOM */\n.iso-svg[data-animate=\"bloom\"] .iso-scene-root{\n  animation:svg3d-float calc(5s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"bloom\"] [data-layer=\"main\"]{\n  animation:svg3d-bloom calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n.iso-svg[data-animate=\"bloom\"] [data-layer=\"detail\"]{\n  animation:svg3d-bloom-inner calc(4.4s / var(--anim-speed, 1)) ease-in-out infinite;\n}\n";
+
+    const viewport = document.getElementById('viewport');
+    const stagePanZoom = document.getElementById('stage-pan-zoom');
+    const stageOrbit = document.getElementById('stage-3d-orbit');
+    const svgEl = document.querySelector('.stage-3d-orbit svg');
+
+    let state = {
+      zoom: 1,
+      panX: 0,
+      panY: 0,
+      dragMode: 'pan', // 'pan' | 'orbit'
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      mode: svgEl?.getAttribute('data-mode') || '3d',
+      colorMode: svgEl?.getAttribute('data-color-mode') || 'mono',
+      theme: svgEl?.getAttribute('data-theme') || 'light',
+      palette: svgEl?.getAttribute('data-palette') || 'botanical',
+      animate: svgEl?.getAttribute('data-animate') || 'static',
+      showPlate: svgEl?.getAttribute('data-plate') !== 'hidden'
+    };
+
+    // Inicializar compatibilidad en SVGs antiguos (como axis-topography) si no tienen estructura V2
+    function upgradeLegacySvgIfNeeded() {
+      if (!svgEl) return;
+      svgEl.classList.add('iso-svg', 'iso');
+
+      // Asegurar que el CSS de animaciones y color esté inyectado
+      let styleTag = svgEl.querySelector('style');
+      if (!styleTag) {
+        styleTag = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+        svgEl.prepend(styleTag);
+      }
+      if (!styleTag.textContent.includes('svg3d-float')) {
+        styleTag.textContent += '\n' + EXTRA_ANIM_CSS + `
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-fill{fill:var(--c-s1,var(--anatomy-paper))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-top{fill:var(--c-top,var(--anatomy-top))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="0"]{fill:var(--c-s0,var(--anatomy-shade-0))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="1"]{fill:var(--c-s1,var(--anatomy-shade-1))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="2"]{fill:var(--c-s2,var(--anatomy-shade-2))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-shade[data-shade="3"]{fill:var(--c-s3,var(--anatomy-shade-3))}
+          .iso[data-color-mode="color"] .iso-solid[data-has-color]>.iso-edge{stroke:var(--c-edge,var(--anatomy-hi))}
+          .iso-svg[data-plate="hidden"] .iso-base-plate{display:none!important}
+          .iso-svg[data-mode="2d"][data-legacy-svg="true"] .iso-shade{display:none!important}
+          .iso-svg[data-mode="2d"][data-legacy-svg="true"] .iso-halo{display:none!important}
+        `;
+      }
+
+      // Envolver en .iso-scene-root si es un SVG V1
+      if (!svgEl.querySelector('.iso-scene-root')) {
+        svgEl.setAttribute('data-legacy-svg', 'true');
+        const rootG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        rootG.setAttribute('class', 'iso-scene-root');
+        const children = Array.from(svgEl.childNodes).filter(n => n.nodeName.toLowerCase() !== 'style' && n.nodeName.toLowerCase() !== 'defs');
+        children.forEach(ch => rootG.appendChild(ch));
+        svgEl.appendChild(rootG);
+
+        // Detectar automáticamente la placa base y los colores por altura/orden en SVGs V1
+        const solids = Array.from(rootG.querySelectorAll('.iso-solid'));
+        const halo = rootG.querySelector('.iso-halo');
+        if (halo) halo.classList.add('iso-base-plate');
+        if (solids.length > 5) {
+          // Los primeros 5 sólidos en modelos con patas + placa suelen ser los pies y la gran bandeja base
+          solids.slice(0, 5).forEach(s => s.classList.add('iso-base-plate'));
+        }
+        const autoRoles = ['panel', 'chassis', 'primary', 'secondary', 'accent', 'leaf', 'gold', 'copper'];
+        solids.forEach((s, idx) => {
+          if (!s.getAttribute('data-tint')) {
+            s.setAttribute('data-tint', autoRoles[idx % autoRoles.length]);
+          }
+        });
+      }
+    }
+
+    function computeShadesClient(hexStr) {
+      const clean = (hexStr || '#6366f1').replace('#', '');
+      const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+      const r = parseInt(full.slice(0, 2), 16) || 99;
+      const g = parseInt(full.slice(2, 4), 16) || 102;
+      const b = parseInt(full.slice(4, 6), 16) || 241;
+      const mix = (tr, tg, tb, w) => {
+        const nr = Math.round(r * (1 - w) + tr * w);
+        const ng = Math.round(g * (1 - w) + tg * w);
+        const nb = Math.round(b * (1 - w) + tb * w);
+        return '#' + [nr, ng, nb].map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+      };
+      return {
+        top: mix(255, 255, 255, 0.34),
+        s3: mix(255, 255, 255, 0.14),
+        s2: '#' + full.toLowerCase(),
+        s1: mix(15, 23, 42, 0.18),
+        s0: mix(15, 23, 42, 0.36),
+        edge: mix(10, 12, 20, 0.58),
+        crease: mix(255, 255, 255, 0.45)
+      };
+    }
+
+    function applyPaletteToSolids(palName) {
+      if (!svgEl) return;
+      const pal = PALETTES[palName] || PALETTES.botanical;
+
+      // 1. Inyectar variables CSS semánticas en el SVG raíz (actualiza instantáneamente Stickers Pop, notas de voz, cohetes, corazones, etc.)
+      const semanticKeys = ['primary', 'secondary', 'accent', 'petal', 'leaf', 'stem', 'gold', 'copper', 'chassis', 'panel', 'pcb'];
+      semanticKeys.forEach(function(k) {
+        if (pal[k]) svgEl.style.setProperty('--pal-' + k, pal[k]);
+      });
+
+      // 2. Actualizar bloques 3D (.iso-solid) con cálculo analítico de 4 tonos
+      svgEl.querySelectorAll('.iso-solid').forEach(el => {
+        const tint = el.getAttribute('data-tint') || 'primary';
+        const hex = pal[tint] || (tint.startsWith('#') ? tint : pal.primary);
+        const sh = computeShadesClient(hex);
+        el.setAttribute('data-has-color', '');
+        el.style.setProperty('--c-top', sh.top);
+        el.style.setProperty('--c-s0', sh.s0);
+        el.style.setProperty('--c-s1', sh.s1);
+        el.style.setProperty('--c-s2', sh.s2);
+        el.style.setProperty('--c-s3', sh.s3);
+        el.style.setProperty('--c-edge', sh.edge);
+        el.style.setProperty('--c-crease', sh.crease);
+      });
+
+      // 3. Actualizar degradados de plantillas e ilustraciones tipo Aurora / Cube / Tech
+      const r1 = svgEl.querySelector('#aurora-ribbon-1');
+      if (r1) {
+        const stops = r1.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.primary || '#6366f1');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.accent || pal.secondary || '#06b6d4');
+        if (stops[2]) stops[2].setAttribute('stop-color', pal.leaf || pal.primary || '#10b981');
+      }
+      const r2 = svgEl.querySelector('#aurora-ribbon-2');
+      if (r2) {
+        const stops = r2.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.accent || pal.petal || '#f43f5e');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary || pal.primary || '#8b5cf6');
+        if (stops[2]) stops[2].setAttribute('stop-color', pal.primary || '#06b6d4');
+      }
+      const r3 = svgEl.querySelector('#aurora-ribbon-3');
+      if (r3) {
+        const stops = r3.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.leaf || pal.primary || '#10b981');
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary || pal.accent || '#06b6d4');
+      }
+      const gradV = svgEl.querySelector('#grad-primary-v');
+      if (gradV) {
+        const stops = gradV.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.primary);
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.secondary);
+      }
+      const gradDiag = svgEl.querySelector('#grad-accent-diag');
+      if (gradDiag) {
+        const stops = gradDiag.querySelectorAll('stop');
+        if (stops[0]) stops[0].setAttribute('stop-color', pal.accent);
+        if (stops[1]) stops[1].setAttribute('stop-color', pal.primary);
+      }
+      // Actualizar orbes difusos de fondo si existen
+      const orbs = svgEl.querySelectorAll('ellipse, circle');
+      if (orbs.length >= 3 && svgEl.querySelector('#aurora-blur-heavy')) {
+        if (orbs[0]) orbs[0].setAttribute('fill', pal.primary);
+        if (orbs[1]) orbs[1].setAttribute('fill', pal.accent || pal.secondary);
+        if (orbs[2]) orbs[2].setAttribute('fill', pal.leaf || pal.primary);
+      }
+    }
+
+    function applyCustomTint(groupRole, hexValue) {
+      if (!svgEl) return;
+      setColorMode('color');
+
+      // 1. Inyectar variables semánticas en el root para que los estilos CSS y animaciones 2D Pop se enteren
+      if (groupRole === 'primary') {
+        svgEl.style.setProperty('--pal-primary', hexValue);
+        const r1 = svgEl.querySelector('#aurora-ribbon-1 stop:first-child');
+        if (r1) r1.setAttribute('stop-color', hexValue);
+      } else if (groupRole === 'secondary') {
+        svgEl.style.setProperty('--pal-secondary', hexValue);
+        svgEl.style.setProperty('--pal-leaf', hexValue);
+        svgEl.style.setProperty('--pal-stem', hexValue);
+        const r2 = svgEl.querySelector('#aurora-ribbon-2 stop:first-child');
+        if (r2) r2.setAttribute('stop-color', hexValue);
+      } else if (groupRole === 'accent') {
+        svgEl.style.setProperty('--pal-accent', hexValue);
+        svgEl.style.setProperty('--pal-petal', hexValue);
+        svgEl.style.setProperty('--pal-gold', hexValue);
+        const r3 = svgEl.querySelector('#aurora-ribbon-3 stop:first-child');
+        if (r3) r3.setAttribute('stop-color', hexValue);
+      }
+
+      // 2. Aplicar a bloques 3D
+      const roleMap = {
+        primary: ['primary', 'petal', 'petal-deep', 'chassis'],
+        secondary: ['secondary', 'leaf', 'stem', 'pcb', 'panel'],
+        accent: ['accent', 'gold', 'copper', 'brass', 'wood']
+      };
+      const targets = roleMap[groupRole] || [groupRole];
+      const sh = computeShadesClient(hexValue);
+      svgEl.querySelectorAll('.iso-solid').forEach(el => {
+        const tint = el.getAttribute('data-tint') || 'primary';
+        if (targets.includes(tint)) {
+          el.setAttribute('data-has-color', '');
+          el.style.setProperty('--c-top', sh.top);
+          el.style.setProperty('--c-s0', sh.s0);
+          el.style.setProperty('--c-s1', sh.s1);
+          el.style.setProperty('--c-s2', sh.s2);
+          el.style.setProperty('--c-s3', sh.s3);
+          el.style.setProperty('--c-edge', sh.edge);
+          el.style.setProperty('--c-crease', sh.crease);
+        }
+      });
+    }
+
+    function renderTransform() {
+      stagePanZoom.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+      stageOrbit.style.transform = `rotateX(${state.rotX}deg) rotateY(${state.rotY}deg) rotateZ(${state.rotZ}deg)`;
+      document.getElementById('zoom-readout').textContent = Math.round(state.zoom * 100) + '%';
+    }
+
+    function zoomStep(delta, centerX, centerY) {
+      const next = Math.min(8, Math.max(0.25, +(state.zoom + delta).toFixed(2)));
+      state.zoom = next;
+      renderTransform();
+    }
+
+    function resetZoomAndPan() {
+      state.zoom = 1;
+      state.panX = 0;
+      state.panY = 0;
+      renderTransform();
+    }
+
+    function setAnglePreset(rx, ry, rz) {
+      stopAutoSpin();
+      state.rotX = rx;
+      state.rotY = ry;
+      state.rotZ = rz;
+      document.getElementById('tilt-x').value = rx;
+      document.getElementById('tilt-y').value = ry;
+      document.getElementById('tilt-z').value = rz;
+      document.getElementById('tilt-x-val').textContent = rx + '°';
+      document.getElementById('tilt-y-val').textContent = ry + '°';
+      document.getElementById('tilt-z-val').textContent = rz + '°';
+      renderTransform();
+    }
+
+    function resetOrbit() {
+      setAnglePreset(0, 0, 0);
+    }
+
+    let spinAnimationId = null;
+    function stopAutoSpin() {
+      if (spinAnimationId) {
+        cancelAnimationFrame(spinAnimationId);
+        spinAnimationId = null;
+      }
+      const spinBtn = document.getElementById('btn-auto-spin');
+      if (spinBtn) {
+        spinBtn.classList.remove('active');
+        spinBtn.innerHTML = '▶ Turntable';
+      }
+    }
+
+    function toggleAutoSpin() {
+      if (spinAnimationId) {
+        stopAutoSpin();
+      } else {
+        const spinBtn = document.getElementById('btn-auto-spin');
+        if (spinBtn) {
+          spinBtn.classList.add('active');
+          spinBtn.innerHTML = '⏸ Pausar 360°';
+        }
+        function step() {
+          state.rotY = (state.rotY + 0.65) % 360;
+          const roundedY = Math.round(state.rotY);
+          const sliderY = ((roundedY + 180) % 360) - 180;
+          document.getElementById('tilt-y').value = sliderY;
+          document.getElementById('tilt-y-val').textContent = roundedY + '°';
+          renderTransform();
+          spinAnimationId = requestAnimationFrame(step);
+        }
+        spinAnimationId = requestAnimationFrame(step);
+      }
+    }
+
+    function updateOrbitFromSliders() {
+      state.rotX = Number(document.getElementById('tilt-x').value);
+      state.rotY = Number(document.getElementById('tilt-y').value);
+      state.rotZ = Number(document.getElementById('tilt-z').value);
+      document.getElementById('tilt-x-val').textContent = state.rotX + '°';
+      document.getElementById('tilt-y-val').textContent = state.rotY + '°';
+      document.getElementById('tilt-z-val').textContent = state.rotZ + '°';
+      renderTransform();
+    }
+
+    function setDragMode(mode) {
+      state.dragMode = mode;
+      document.getElementById('btn-drag-pan').classList.toggle('active', mode === 'pan');
+      document.getElementById('btn-drag-orbit').classList.toggle('active', mode === 'orbit');
+      document.getElementById('hud-drag').textContent = mode === 'pan' ? 'Pan' : '3D Orbit';
+    }
+
+    function setDimensionMode(mode) {
+      state.mode = mode;
+      if (svgEl) svgEl.setAttribute('data-mode', mode);
+      document.getElementById('mode-3d-btn').classList.toggle('active', mode === '3d');
+      document.getElementById('mode-2d-btn').classList.toggle('active', mode === '2d');
+      document.getElementById('badge-mode').textContent = mode === '2d' ? '2D Flat Vector' : '3D Volumetric';
+      document.getElementById('hud-mode').textContent = mode.toUpperCase();
+    }
+
+    function setColorMode(cMode) {
+      state.colorMode = cMode;
+      if (svgEl) svgEl.setAttribute('data-color-mode', cMode);
+      if (cMode === 'color') applyPaletteToSolids(state.palette);
+      document.getElementById('color-mono-btn').classList.toggle('active', cMode === 'mono');
+      document.getElementById('color-full-btn').classList.toggle('active', cMode === 'color');
+      document.getElementById('badge-color').textContent = cMode === 'color' ? 'Full Color (' + state.palette + ')' : 'Monochrome B&W';
+      document.getElementById('hud-color').textContent = cMode === 'color' ? 'Color' : 'Mono B&W';
+    }
+
+    function setTheme(theme) {
+      state.theme = theme;
+      if (svgEl) svgEl.setAttribute('data-theme', theme);
+      document.getElementById('theme-light-btn').classList.toggle('active', theme === 'light');
+      document.getElementById('theme-dark-btn').classList.toggle('active', theme === 'dark');
+    }
+
+    function setPalette(palName) {
+      state.palette = palName;
+      if (svgEl) svgEl.setAttribute('data-palette', palName);
+      setColorMode('color');
+      applyPaletteToSolids(palName);
+      document.querySelectorAll('#palette-grid .preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.pal === palName);
+      });
+    }
+
+    function setStrokeWeight(val) {
+      document.getElementById('stroke-weight-val').textContent = val + 'px';
+      if (svgEl) svgEl.style.setProperty('--anatomy-weight', val + 'px');
+    }
+
+    function setAnimation(anim) {
+      state.animate = anim;
+      if (svgEl) svgEl.setAttribute('data-animate', anim);
+      document.getElementById('hud-anim').textContent = anim;
+      document.querySelectorAll('#anim-grid .preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.anim === anim);
+      });
+    }
+
+    function setAnimSpeed(val) {
+      document.getElementById('anim-speed-val').textContent = val + 'x';
+      if (svgEl) svgEl.style.setProperty('--anim-speed', val);
+    }
+
+    function setBasePlate(show) {
+      state.showPlate = show;
+      if (svgEl) svgEl.setAttribute('data-plate', show ? 'visible' : 'hidden');
+      document.getElementById('plate-show-btn').classList.toggle('active', show);
+      document.getElementById('plate-hide-btn').classList.toggle('active', !show);
+    }
+
+    function setBackdrop(bg) {
+      viewport.setAttribute('data-backdrop', bg);
+      document.querySelectorAll('[data-bg]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bg === bg);
+      });
+    }
+
+    // Eventos del lienzo: Zoom con rueda + Drag para Pan o 3D Orbit
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.14 : -0.14;
+      zoomStep(delta, e.clientX, e.clientY);
+    }, { passive: false });
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.floating-dock')) return;
+      state.isDragging = true;
+      state.startX = e.clientX;
+      state.startY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!state.isDragging) return;
+      const dx = e.clientX - state.startX;
+      const dy = e.clientY - state.startY;
+      state.startX = e.clientX;
+      state.startY = e.clientY;
+
+      if (state.dragMode === 'orbit' || e.shiftKey) {
+        stopAutoSpin();
+        // Giro 360° continuo en eje Y y -90° a +90° en elevación X
+        state.rotY = +(state.rotY + dx * 0.45).toFixed(1);
+        state.rotX = Math.max(-90, Math.min(90, +(state.rotX - dy * 0.45).toFixed(1)));
+        
+        // Mapear al slider de -180 a 180 para feedback visual
+        const normY = ((((Math.round(state.rotY) + 180) % 360) + 360) % 360) - 180;
+        document.getElementById('tilt-x').value = state.rotX;
+        document.getElementById('tilt-y').value = normY;
+        document.getElementById('tilt-x-val').textContent = Math.round(state.rotX) + '°';
+        document.getElementById('tilt-y-val').textContent = Math.round(state.rotY) + '°';
+      } else {
+        state.panX += dx;
+        state.panY += dy;
+      }
+      renderTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      state.isDragging = false;
+    });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function getSerializedSvg() {
+      if (!svgEl) return '';
+      const clone = svgEl.cloneNode(true);
+      // Si el usuario ocultó la placa base, la removemos del SVG exportado para que quede 100% limpio
+      if (!state.showPlate) {
+        clone.querySelectorAll('.iso-base-plate').forEach(n => n.remove());
+      }
+      return clone.outerHTML;
+    }
+
+    function copySvg() {
+      const svg = getSerializedSvg();
+      navigator.clipboard.writeText(svg).then(() => {
+        showToast('✅ SVG copied to clipboard!');
+      });
+    }
+
+    function copyReactComponent() {
+      const svg = getSerializedSvg();
+      const jsx = `import React from 'react';
+
+export function Illustration3D({ className = '', style = {} }) {
+  return (
+    <div
+      className={className}
+      style={{ display: 'inline-block', width: '100%', ...style }}
+      dangerouslySetInnerHTML={{ __html: ${JSON.stringify(svg)} }}
+    />
+  );
+}`;
+      navigator.clipboard.writeText(jsx).then(() => {
+        showToast('⚛️ React <Illustration3D /> copied!');
+      });
+    }
+
+    function downloadSvg() {
+      const svg = getSerializedSvg();
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const baseName = 'retro_play_console___8-bit_pop_sticker___3d_card'.replace(/^_+|_+$/g, '');
+      a.download = `${baseName}-${state.mode}-${state.colorMode}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('⬇ SVG Downloaded!');
+    }
+
+    // Inicializar estado de la UI
+    upgradeLegacySvgIfNeeded();
+    setDimensionMode(state.mode);
+    setTheme(state.theme);
+    setColorMode(state.colorMode);
+    setAnimation(state.animate);
+    setBasePlate(state.showPlate);
+    document.querySelectorAll('#palette-grid .preset-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.pal === state.palette);
+    });
+  </script>
+</body>
+</html>
